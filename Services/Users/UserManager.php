@@ -1,17 +1,24 @@
 <?php
 // UserManager.php
 
+namespace Services\Users;
+
+use Database\DbConnection;
+
 require_once('DbConnection.php');
 
-class UserManager {
+class UserManager
+{
     private $dbConnection;
 
-    public function __construct() {
+    public function __construct()
+    {
         // Vytvořit instanci třídy pro připojení k databázi
         $this->dbConnection = new DbConnection();
     }
 
-    public function getAllUsers() {
+    public function getAllUsers()
+    {
         $conn = $this->dbConnection->getConnection();
 
         // Získání všech uživatelů z databáze
@@ -32,7 +39,8 @@ class UserManager {
         return $users;
     }
 
-    public function getUserById($user_id) {
+    public function getUserById($user_id)
+    {
         $conn = $this->dbConnection->getConnection();
 
         // Získání informací o uživateli podle ID
@@ -55,4 +63,5 @@ class UserManager {
         }
     }
 }
+
 ?>

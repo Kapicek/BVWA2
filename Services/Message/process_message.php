@@ -2,6 +2,8 @@
 
 // process_message.php
 
+use Services\Message\MessageManager;
+
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

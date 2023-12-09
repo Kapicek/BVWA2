@@ -1,6 +1,8 @@
 <?php
 
-class DbConnection {
+namespace Database;
+class DbConnection
+{
     private $servername = "localhost";
     private $username = "root";
     private $password = "";
@@ -8,7 +10,8 @@ class DbConnection {
     private $conn;
 
     // Konstruktor
-    public function __construct() {
+    public function __construct()
+    {
         $this->conn = new mysqli($this->servername, $this->username, $this->password, $this->dbname);
 
         // Kontrola připojení
@@ -18,12 +21,14 @@ class DbConnection {
     }
 
     // Získání připojení
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->conn;
     }
 
     // Uzavření připojení
-    public function closeConnection() {
+    public function closeConnection()
+    {
         $this->conn->close();
     }
 }

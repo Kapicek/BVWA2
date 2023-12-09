@@ -1,6 +1,8 @@
 <?php
 // YourPageAfterLogin.php
 
+use Services\Users\UserManager;
+
 session_start();
 
 if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {

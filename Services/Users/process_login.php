@@ -1,4 +1,7 @@
 <?php
+
+use Database\DbConnection;
+
 session_start(); // Spuštění relace (session)
 
 // Importovat třídu DbConnection

@@ -1,17 +1,24 @@
 <?php
 // MessageManager.php
 
+namespace Services\Message;
+
+use Database\DbConnection;
+
 require_once('DbConnection.php');
 
-class MessageManager {
+class MessageManager
+{
     private $dbConnection;
 
-    public function __construct() {
+    public function __construct()
+    {
         // Vytvořit instanci třídy pro připojení k databázi
         $this->dbConnection = new DbConnection();
     }
 
-    public function saveMessage($sender_id, $receiver_id, $content) {
+    public function saveMessage($sender_id, $receiver_id, $content)
+    {
         $conn = $this->dbConnection->getConnection();
 
         // Ochrana před SQL injection
@@ -29,7 +36,8 @@ class MessageManager {
         return $result;
     }
 
-    public function getAllMessagesForUser($user_id) {
+    public function getAllMessagesForUser($user_id)
+    {
         $conn = $this->dbConnection->getConnection();
 
         // Ochrana před SQL injection
@@ -53,4 +61,5 @@ class MessageManager {
         return $messages;
     }
 }
+
 ?>

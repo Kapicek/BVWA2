@@ -1,5 +1,7 @@
 <?php
 // Importovat třídu DbConnection
+use Database\DbConnection;
+
 require_once('DbConnection.php');
 
 // Vytvořit instanci třídy pro připojení k databázi

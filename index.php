@@ -14,7 +14,7 @@
 
     <section>
         <h2>Přihlášení</h2>
-        <form action="process_login.php" method="post">
+        <form action="Services/Users/process_login.php" method="post">
             <label for="loginUsername">Login:</label>
             <input type="text" id="loginUsername" name="loginUsername" required>
 
@@ -29,7 +29,7 @@
 
     <section class="registration-section">
         <h2>Registrace</h2>
-        <form action="process_registration.php" method="post" enctype="multipart/form-data">
+        <form action="Services/Users/process_registration.php" method="post" enctype="multipart/form-data">
             <label for="firstName">Jméno:</label>
             <input type="text" id="firstName" name="firstName" required>
 
