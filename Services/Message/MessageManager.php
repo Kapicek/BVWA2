@@ -5,7 +5,7 @@ namespace Services\Message;
 
 use Database\DbConnection;
 
-require_once('DbConnection.php');
+require_once(__DIR__.'/../../Database/DbConnection.php');
 
 class MessageManager
 {

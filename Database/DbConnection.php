@@ -1,6 +1,8 @@
 <?php
 
 namespace Database;
+use mysqli;
+
 class DbConnection
 {
     private $servername = "localhost";

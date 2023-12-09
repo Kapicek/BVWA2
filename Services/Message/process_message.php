@@ -9,7 +9,7 @@ session_start();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
         // Import třídy MessageManager
-        require_once('MessageManager.php');
+        require_once(__DIR__.'/../Message/MessageManager.php');
 
         // Vytvoření instance třídy MessageManager
         $messageManager = new MessageManager();
@@ -22,7 +22,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $messageContent = $_POST['messageContent'];
 
         // Generování náhodného inicializačního vektoru (IV)
-        $iv = bin2hex(random_bytes(16));
+        try {
+            $iv = bin2hex(random_bytes(16));
+        } catch (\Random\RandomException $e) {
+            echo 'gg jsem jsi se nemel dostat';
+        }
 
         // Klíč pro šifrování a dešifrování
         $encryptionKey = "tajny_klic_pro_sifrovani";

@@ -18,7 +18,7 @@
 
 <section class="container mt-5 bg-dark text-white p-4 rounded">
     <h2 class="mb-4">Přihlášení</h2>
-    <form action="process_login.php" method="post">
+    <form action="/bvwa2/Services/Users/process_login.php" method="post">
         <div class="mb-3">
             <label for="loginUsername" class="form-label">Uživatelské jméno:</label>
             <input type="text" class="form-control" id="loginUsername" name="loginUsername" placeholder="Zadejte uživatelské jméno" required>
@@ -37,7 +37,7 @@
 
 <section class="container registration-section mt-5 bg-dark text-white p-4 rounded">
     <h2 class="mb-4">Registrace</h2>
-    <form action="process_registration.php" method="post" enctype="multipart/form-data">
+    <form action="/bvwa2/Services/Users/process_registration.php" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="firstName" class="form-label">Jméno:</label>
             <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Zadejte jméno" required>

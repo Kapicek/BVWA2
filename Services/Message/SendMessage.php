@@ -6,7 +6,7 @@ session_start();
 
 if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
     // Import třídy UserManager
-    require_once('UserManager.php');
+    require_once(__DIR__.'/../Users/UserManager.php');
 
     // Vytvoření instance třídy UserManager
     $userManager = new UserManager();
@@ -27,7 +27,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
     }
 } else {
     // Pokud uživatel není přihlášen, přesměrujte ho na přihlašovací stránku
-    header('Location: login.php');
+    //header('Location: login.php');
     exit();
 }
 ?>

@@ -2,7 +2,7 @@
 // Importovat třídu DbConnection
 use Database\DbConnection;
 
-require_once('DbConnection.php');
+require_once(__DIR__.'/../../Database/DbConnection.php');
 
 // Vytvořit instanci třídy pro připojení k databázi
 $dbConnection = new DbConnection();
