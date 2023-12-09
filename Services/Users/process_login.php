@@ -32,9 +32,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Heslo je platné
             $_SESSION['user_id'] = $row['id'];
             $_SESSION['username'] = $row['username'];
+            $isAdmin = $row['isAdmin'];
 
-            // Přesměrování na Users.php
-            header('Location: http://localhost/bvwa2/view/users.php');
+            // Pokud je přihlášený uživatel admin tak ho to přesměruje
+            if($isAdmin == 1) {
+                header('Location: http://localhost/bvwa2/view/users.php'); //FIXME fixnout tohle Kubo <3
+            }else {
+                header('Location: http://localhost/bvwa2/view/userprofile.php');
+            }
+
             exit(); // Ukončí běh skriptu po přesměrování
         } else {
             echo "Nesprávné heslo";
