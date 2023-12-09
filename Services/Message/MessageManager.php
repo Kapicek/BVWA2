@@ -44,7 +44,10 @@ class MessageManager
         $user_id = mysqli_real_escape_string($conn, $user_id);
 
         // Získání všech zpráv pro konkrétního uživatele
-        $sql = "SELECT * FROM messages WHERE receiver_id = '$user_id'";
+        $sql = "SELECT messages.*, users.firstName AS krestni, users.lastName AS prijmeni
+            FROM messages
+            JOIN users ON messages.sender_id = users.id
+            WHERE messages.receiver_id = '$user_id'";
         $result = $conn->query($sql);
 
         $messages = array();
