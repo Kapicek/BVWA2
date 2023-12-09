@@ -2,6 +2,7 @@
 // Importovat třídu DbConnection
 use Database\DbConnection;
 
+// Importovat třídu DbConnection
 require_once(__DIR__.'/../../Database/DbConnection.php');
 
 // Vytvořit instanci třídy pro připojení k databázi
@@ -20,22 +21,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = password_hash($_POST['password'], PASSWORD_BCRYPT); // Bezpečné ukládání hesla
 
-    // Zpracování profilové fotografie (uložení do složky a uložení cesty do databáze)
-    $target_dir = "uploads/";
-    $profilePic = $target_dir . basename($_FILES["profilePic"]["name"]);
-    move_uploaded_file($_FILES["profilePic"]["tmp_name"], $profilePic);
+    // Zpracování profilové fotografie
+    $profilePicTmp = $_FILES['profilePic']['tmp_name'];
+    $profilePicType = pathinfo($_FILES['profilePic']['name'], PATHINFO_EXTENSION);
+    
+    // Convert the image to JPEG format with quality 90
+    $convertedProfilePic = imagecreatefromstring(file_get_contents($profilePicTmp));
+    ob_start();
+    imagejpeg($convertedProfilePic, NULL, 90);
+    $profilePic = ob_get_contents();
+    ob_end_clean();
 
     // Vložení dat do databáze
     $sql = "INSERT INTO users (firstName, lastName, email, phone, gender, profilePic, username, password)
-            VALUES ('$firstName', '$lastName', '$email', '$phone', '$gender', '$profilePic', '$username', '$password')";
+            VALUES ('$firstName', '$lastName', '$email', '$phone', '$gender', ?, '$username', '$password')";
 
-    if ($conn->query($sql) === TRUE) {
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('s', $profilePic);
+    
+    if ($stmt->execute()) {
         echo "Registrace úspěšná";
     } else {
         echo "Chyba při registraci: " . $conn->error;
     }
-}
 
-// Uzavření spojení s databází
-$dbConnection->closeConnection();
+    // Uzavření spojení s databází
+    $dbConnection->closeConnection();
+}
 ?>

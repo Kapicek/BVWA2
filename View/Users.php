@@ -9,8 +9,8 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
     $user_id = $_SESSION['user_id'];
     $username = $_SESSION['username'];
 
-    // Importujte třídu UserManager
-    require_once(__DIR__.'/../Services/Users/UserManager.php');
+     // Importujte třídu UserManager
+     require_once(__DIR__.'/../Services/Users/UserManager.php');
 
     // Vytvořte instanci třídy UserManager
     $userManager = new UserManager();
@@ -42,7 +42,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
         <?php
         foreach ($allUsers as $user) {
             echo '<div class="user-card">';
-            echo '<img src="../' . $user['profilePic'] . '" alt="Profilová fotografie">';
+            echo '<img src="data:image/jpeg;base64,' . base64_encode($user['profilePic']) . '" alt="Profilová fotografie">'; //TODO Když to nepůjde -> opravuje Jakub Škrach
             echo '<p>ID: ' . $user['id'] . '</p>';
             echo '<p>Jméno: ' . $user['firstName'] . '</p>';
             echo '<p>Příjmení: ' . $user['lastName'] . '</p>';
