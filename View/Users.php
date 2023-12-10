@@ -15,6 +15,8 @@ if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE[
     // Vytvořte instanci třídy UserManager
     $userManager = new UserManager();
 
+    $encryptionKey = "tajny_klic_pro_sifrovani";
+
     // Získání všech uživatelů
     $allUsers = $userManager->getAllUsers();
 } else {
@@ -125,12 +127,12 @@ if (isset($_POST["sub"])) {
 
                 <div class="form-group mb-3">
                     <label>Email:</label>
-                    <input id="emailInputId" type="text" class="form-control" name="email" value="<?= $user['email']; ?>">
+                    <input id="emailInputId" type="text" class="form-control" name="email" value="<?= openssl_decrypt($user['email'], 'aes-256-cbc', $encryptionKey, 0, $user['key_iv']); ?>">
                 </div>
 
                 <div class="form-group mb-3">
                     <label>Telefon:</label>
-                    <input id="phoneInputId" type="text" class="form-control" name="phone" value="<?= $user['phone']; ?>">
+                    <input id="phoneInputId" type="text" class="form-control" name="phone" value="<?= openssl_decrypt($user['phone'], 'aes-256-cbc', $encryptionKey, 0, $user['key_iv']); ?>">
                 </div>
 
                 <input type="hidden" name="page" value="users">
