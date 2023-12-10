@@ -81,7 +81,54 @@ public function getAllMessagesForUser($user_id)
     }
 
     // Uzavření spojení s databází
-    $this->dbConnection->closeConnection();
+    //$this->dbConnection->closeConnection();
+
+    return $messages;
+}
+
+public function getAllMessagesByUser($user_id) {
+    $conn = $this->dbConnection->getConnection();
+
+    // Příprava připraveného dotazu
+    $sql = "SELECT messages.*, 
+                   users.firstName AS krestni, 
+                   users.lastName AS prijmeni
+            FROM messages
+            JOIN users ON messages.sender_id = users.id
+            WHERE messages.sender_id = ?";
+
+    // Připravení a provedení připraveného dotazu s bind_param
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $user_id);
+    $stmt->execute();
+
+     // Klíč pro šifrování a dešifrování
+     $encryptionKey = "tajny_klic_pro_sifrovani";
+
+    // Získání výsledků
+    $result = $stmt->get_result();
+
+    $messages = array();
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            // Assuming $row['key_iv'] contains the IV (Initialization Vector)
+            $iv = $row['key_iv'];
+
+            // Assuming $row['content'] contains the encrypted content
+            // Decrypt the content using openssl_decrypt
+            $decryptedContent = openssl_decrypt($row['content'], 'aes-256-cbc', $encryptionKey, 0, $iv);
+
+            // Add the decrypted content to the $row array
+            $row['decryptedContent'] = $decryptedContent;
+
+            // Add the modified row to the messages array
+            $messages[] = $row;
+        }
+    }
+
+    // Uzavření spojení s databází
+    //$this->dbConnection->closeConnection();
 
     return $messages;
 }
