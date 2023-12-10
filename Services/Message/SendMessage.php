@@ -42,15 +42,15 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
         </div>
     </nav>
     <?php
-     // Zobrazit úspěšnou zprávu
-     if (isset($_SESSION['success_message'])) {
-        echo '<div class="alert alert-success" role="alert">' . $_SESSION['success_message'] . '</div>';
+    // Zobrazit úspěšnou zprávu
+    if (isset($_SESSION['success_message'])) {
+        echo '<div id="success-alert" class="alert alert-success" role="alert">' . $_SESSION['success_message'] . '</div>';
         unset($_SESSION['success_message']); // Smazat zprávu
     }
 
     // Zobrazit chybovou zprávu
     if (isset($_SESSION['error_message'])) {
-        echo '<div class="alert alert-danger" role="alert">' . $_SESSION['error_message'] . '</div>';
+        echo '<div id="error-alert" class="alert alert-danger" role="alert">' . $_SESSION['error_message'] . '</div>';
         unset($_SESSION['error_message']); // Smazat zprávu
     }
 
@@ -62,7 +62,8 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                 <form action="process_message.php" method="post">
                     <div class="mb-3">
                         <label for="username" class="form-label">Uživatelské jméno</label>
-                        <input type="text" class="form-control" name="receiverUsername" id="username" placeholder="Uživatelské jméno" required>
+                        <input type="text" class="form-control" name="receiverUsername" id="username"
+                            placeholder="Uživatelské jméno" required>
                     </div>
                     <div class="mb-3">
                         <label for="message" class="form-label">Zpráva</label>
@@ -74,6 +75,22 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Automatické smazání alertu po určité době
+            setTimeout(function () {
+                var successAlert = document.getElementById('success-alert');
+                var errorAlert = document.getElementById('error-alert');
+                if (successAlert) {
+                    successAlert.remove();
+                }
+                if (errorAlert) {
+                    errorAlert.remove();
+                }
+            }, 5000); // 5 sekund
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
