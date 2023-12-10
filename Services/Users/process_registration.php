@@ -23,20 +23,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Zpracování profilové fotografie
     $profilePicTmp = $_FILES['profilePic']['tmp_name'];
-    $profilePicType = pathinfo($_FILES['profilePic']['name'], PATHINFO_EXTENSION);
-
-    // Získání informací o rozměrech původního obrázku
-    list($width, $height) = getimagesize($profilePicTmp);
 
     // Příprava nových rozměrů (maximální šířka a výška)
-    $newWidth = 800;
-    $newHeight = ($height / $width) * $newWidth;
+    $maxWidth = 800;
+    $maxHeight = 800;  // Můžete použít různé hodnoty pro šířku a výšku podle potřeby
+
+    list($width, $height, $type) = getimagesize($profilePicTmp);
+
+
+
+    $aspectRatio = $width / $height;
+
+    if ($width > $height) {
+        $newWidth = $maxWidth;
+        $newHeight = $maxWidth / $aspectRatio;
+    } else {
+        $newHeight = $maxHeight;
+        $newWidth = $maxHeight * $aspectRatio;
+    }
 
     // Vytvoření prázdného obrázku s novými rozměry
     $convertedProfilePic = imagecreatetruecolor($newWidth, $newHeight);
 
     // Nahrání původního obrázku
-    $sourceImage = imagecreatefromstring(file_get_contents($profilePicTmp));
+    $sourceImage = imagecreatefromjpeg($profilePicTmp);
 
     // Vytvoření změněného obrázku s novými rozměry
     imagecopyresampled($convertedProfilePic, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
@@ -51,12 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     imagedestroy($sourceImage);
     imagedestroy($convertedProfilePic);
 
-    // Vložení dat do databáze
-//    $sql = "INSERT INTO users (firstName, lastName, email, phone, gender, profilePic, username, password)
-//            VALUES ('$firstName', '$lastName', '$email', '$phone', '$gender', ?, '$username', '$password')";
 
-    //    $stmt = $conn->prepare($sql);
-//    $stmt->bind_param('s', $profilePic);
     $sql = "INSERT INTO users (firstName, lastName, email, phone, gender, profilePic, username, password)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
