@@ -17,9 +17,18 @@ class MessageManager
         $this->dbConnection = new DbConnection();
     }
 
-    public function saveMessage($sender_id, $receiver_id, $content, $iv)
+    public function saveMessage($sender_id, $receiverUsername, $content, $iv)
 {
     $conn = $this->dbConnection->getConnection();
+
+    // Získání id podle uživatelského jména
+    $receiver_id = $this->getReceiverIdByUsername($receiverUsername);
+
+    // validace id
+    if ($receiver_id === null) {
+        $_SESSION['error_message'] = 'Uživatel s tímto jménem nebyl nalezen.';
+        return;
+    }
 
     $iv_bin = hex2bin($iv);
     // Příprava připraveného dotazu
@@ -32,10 +41,33 @@ class MessageManager
 
     // Uzavření spojení s databází
     $this->dbConnection->closeConnection();
-
+    $_SESSION['success_message'] = 'Zpráva byla úspěšně odeslána.';
     return $result;
 }
 
+private function getReceiverIdByUsername($username) {
+    $conn = $this->dbConnection->getConnection();
+
+    // Příprava dotazu
+    $sql = "SELECT id FROM users WHERE username = ?";
+    $stmt = $conn->prepare($sql);
+    
+    // Bindování
+    $stmt->bind_param("s", $username);
+
+    $stmt->execute();
+
+    // Získání výsledku
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $receiver_id = $row['id'];
+        return $receiver_id;
+    } else {
+        return null;
+    }
+}
 
 
 public function getAllMessagesForUser($user_id)
@@ -55,8 +87,8 @@ public function getAllMessagesForUser($user_id)
     $stmt->bind_param("s", $user_id);
     $stmt->execute();
 
-     // Klíč pro šifrování a dešifrování
-     $encryptionKey = "tajny_klic_pro_sifrovani";
+    // Klíč pro šifrování a dešifrování
+    $encryptionKey = "tajny_klic_pro_sifrovani";
 
     // Získání výsledků
     $result = $stmt->get_result();

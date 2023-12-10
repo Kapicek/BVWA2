@@ -6,7 +6,7 @@ session_start();
 
 if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
     // Import třídy UserManager
-    require_once(__DIR__.'/../Users/UserManager.php');
+    require_once(__DIR__ . '/../Users/UserManager.php');
 
     // Vytvoření instance třídy UserManager
     $userManager = new UserManager();
@@ -14,17 +14,6 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
     // Získání informací o přihlášeném uživateli
     $user_id = $_SESSION['user_id'];
     $username = $_SESSION['username'];
-
-    // Získání informací o příjemci z URL parametru
-    $receiver_id = isset($_GET['receiver_id']) ? $_GET['receiver_id'] : null;
-
-    // Získání informací o příjemci
-    $receiverInfo = $userManager->getUserById($receiver_id);
-
-    if (!$receiverInfo) {
-        echo "Příjemce nenalezen.";
-        exit();
-    }
 } else {
     // Pokud uživatel není přihlášen, přesměrujte ho na přihlašovací stránku
     //header('Location: login.php');
@@ -34,30 +23,61 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <title>Poslat zprávu</title>
+    <title>Posílání zprávy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
+
 <body>
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand mx-auto" href="../../View/Messages.php">
+                <h1>Posílání zprávy</h1>
+            </a>
+        </div>
+    </nav>
+    <?php
+     // Zobrazit úspěšnou zprávu
+     if (isset($_SESSION['success_message'])) {
+        echo '<div class="alert alert-success" role="alert">' . $_SESSION['success_message'] . '</div>';
+        unset($_SESSION['success_message']); // Smazat zprávu
+    }
 
-    <header>
-        <h1>Poslat zprávu uživateli <?php echo $receiverInfo['username']; ?></h1>
-    </header>
+    // Zobrazit chybovou zprávu
+    if (isset($_SESSION['error_message'])) {
+        echo '<div class="alert alert-danger" role="alert">' . $_SESSION['error_message'] . '</div>';
+        unset($_SESSION['error_message']); // Smazat zprávu
+    }
 
-    <section>
-        <form action="process_message.php" method="post">
-            <input type="hidden" name="receiver_id" value="<?php echo $receiver_id; ?>">
-
-            <label for="messageContent">Obsah zprávy:</label>
-            <textarea id="messageContent" name="messageContent" rows="4" cols="50" required></textarea>
-
-            <div class="form-buttons">
-                <button type="submit">Poslat zprávu</button>
+    ?>
+    <div class="container text-center">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Poslat zprávu</h5>
+                <form action="process_message.php" method="post">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Uživatelské jméno</label>
+                        <input type="text" class="form-control" name="receiverUsername" id="username" placeholder="Uživatelské jméno" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Zpráva</label>
+                        <textarea class="form-control" name="messageContent" id="message" rows="4"
+                            placeholder="Napište svou zprávu zde" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Odeslat</button>
+                </form>
             </div>
-        </form>
-    </section>
+        </div>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>

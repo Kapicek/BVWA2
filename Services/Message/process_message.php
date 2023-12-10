@@ -16,7 +16,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Získání informací o odesílateli a příjemci
         $sender_id = $_SESSION['user_id'];
-        $receiver_id = $_POST['receiver_id'];
+        $username = $_SESSION['username'];
+        $receiverUsername = $_POST['receiverUsername'];
+        if($username === $receiverUsername) {
+            $_SESSION['error_message'] = 'Nemůžete posílat zprávu sám sobě';
+            header('Location: SendMessage.php');
+            exit();
+        }
 
         // Získání obsahu zprávy
         $messageContent = $_POST['messageContent'];
@@ -25,7 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             $iv = bin2hex(random_bytes(16));
         } catch (\Random\RandomException $e) {
-            echo 'gg jsem jsi se nemel dostat';
+            $_SESSION['error_message'] = 'gg jsem jsi se nemel dostat';
+            header('Location: SendMessage.php');
+            exit();
         }
 
         // Klíč pro šifrování a dešifrování
@@ -35,11 +43,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $encryptedContent = openssl_encrypt($messageContent, 'aes-256-cbc', $encryptionKey, 0, hex2bin($iv));
 
         // Uložení zprávy do databáze
-        $messageManager->saveMessage($sender_id, $receiver_id, $encryptedContent, $iv);
+        $messageManager->saveMessage($sender_id, $receiverUsername, $encryptedContent, $iv);
+        header('Location: SendMessage.php');
+        exit();
 
-        echo "Zpráva byla úspěšně odeslána.";
-    } else {
-        echo "Uživatel není přihlášen.";
     }
 }
 ?>

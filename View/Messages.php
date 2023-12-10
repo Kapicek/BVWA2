@@ -57,6 +57,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
             <!-- Tlačítko pro změnu na doručeno a odesláno -->
             <aside class="col-md-2">
                 <div class="d-flex flex-column align-items-center">
+                    <button onclick="location.href='../Services/Message/SendMessage.php'" class="btn btn-danger mb-2">Nová zpráva</button>
                     <button onclick="showSection('received')" class="btn btn-success mb-2">Doručené</button>
                     <button onclick="showSection('sended')" class="btn btn-primary mb-2">Odeslané</button>
                 </div>
@@ -69,7 +70,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                         <div
                             class="card mb-3 <?php echo ($message['is_displayed'] == 1) ? 'bg-gray text-dark' : 'bg-dark text-light'; ?>">
                             <div class="card-header message-header"
-                                onclick="toggleMessage(this, <?php echo $message['id']; ?>, <?php echo $message['is_displayed']; ?>)">
+                                onclick="toggleMessage(this, <?php echo $message['id']; ?>, <?php echo $message['is_displayed']; ?>, 1)">
                                 <?php echo $message['krestni'] . ' ' . $message['prijmeni']; ?> vám posílá zprávu:
                             </div>
                             <div class="card-body" style="display: none;">
@@ -86,7 +87,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                         <div
                             class="card mb-3 <?php echo ($message['is_displayed'] == 1) ? 'bg-gray text-dark' : 'bg-dark text-light'; ?>">
                             <div class="card-header message-header"
-                                onclick="toggleMessage(this, <?php echo $message['id']; ?>, <?php echo $message['is_displayed']; ?>)">
+                                onclick="toggleMessage(this, <?php echo $message['id']; ?>, <?php echo $message['is_displayed']; ?>, 0)">
                                 <?php echo $message['krestni'] . ' ' . $message['prijmeni']; ?> vám posílá zprávu:
                             </div>
                             <div class="card-body" style="display: none;">
@@ -104,12 +105,12 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
     <!-- Bootstrap JS -->
 
     <script>
-        function toggleMessage(element, messageId, isDisplayed) {
+        function toggleMessage(element, messageId, isDisplayed, isReceiver) {
             var cardBody = element.nextElementSibling;
 
             if (cardBody.style.display === 'none' || cardBody.style.display === '') {
                 cardBody.style.display = 'block';
-                if (isDisplayed === 0){
+                if (isDisplayed === 0 && isReceiver == 1){
                     markMessageAsDisplayed(messageId);
                 }
             } else {
