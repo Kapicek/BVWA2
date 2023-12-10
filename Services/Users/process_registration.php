@@ -25,12 +25,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $profilePicTmp = $_FILES['profilePic']['tmp_name'];
     $profilePicType = pathinfo($_FILES['profilePic']['name'], PATHINFO_EXTENSION);
 
-    // Convert the image to JPEG format with quality 90
-    $convertedProfilePic = imagecreatefromstring(file_get_contents($profilePicTmp));
+    // Získání informací o rozměrech původního obrázku
+    list($width, $height) = getimagesize($profilePicTmp);
+
+    // Příprava nových rozměrů (maximální šířka a výška)
+    $newWidth = 900;
+    $newHeight = ($height / $width) * $newWidth;
+
+    // Vytvoření prázdného obrázku s novými rozměry
+    $convertedProfilePic = imagecreatetruecolor($newWidth, $newHeight);
+
+    // Nahrání původního obrázku
+    $sourceImage = imagecreatefromstring(file_get_contents($profilePicTmp));
+
+    // Vytvoření změněného obrázku s novými rozměry
+    imagecopyresampled($convertedProfilePic, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+    // Konverze obrázku do formátu JPEG s kvalitou 90
     ob_start();
     imagejpeg($convertedProfilePic, NULL, 90);
     $profilePic = ob_get_contents();
     ob_end_clean();
+
+    // Uzavření zdrojového a konvertovaného obrázku
+    imagedestroy($sourceImage);
+    imagedestroy($convertedProfilePic);
 
     // Vložení dat do databáze
 //    $sql = "INSERT INTO users (firstName, lastName, email, phone, gender, profilePic, username, password)
