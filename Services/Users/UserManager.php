@@ -22,7 +22,7 @@ class UserManager
         $conn = $this->dbConnection->getConnection();
 
         // Získání všech uživatelů z databáze
-        $sql = "SELECT * FROM users";
+        $sql = "SELECT * FROM users WHERE permission > -1";
         $result = $conn->query($sql);
 
         $users = array();

@@ -79,8 +79,9 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
 
         <div class="form-group mb-3">
             <?php
-                $userExist = $_GET['userExist'] ?? 0;
-                if ($userExist == 1) {
+                $userExist = $_SESSION['error_user_update'] ?? null;
+                unset($_SESSION['error_user_update']);
+                if ($userExist != null) {
                     echo '<label id="usernameId" for="lastName" style="color: red;">Uživatelské jméno: již existuje</label>';
                 } else {
                     echo '<label for="lastName">Uživatelské jméno:</label>';
@@ -103,6 +104,8 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
             <label for="phone">Telefon:</label>
             <input id="phoneInput" type="text" class="form-control" name="phone" value="<?= $user['phone']; ?>" readonly>
         </div>
+
+        <input type="hidden" name="page" value="profile">
 
         <div class="form-group mb-3">
             <button type="button" class="btn btn-primary" id="editButton" onclick="toggleEditMode()">Editovat profil</button>
