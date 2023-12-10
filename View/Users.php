@@ -81,7 +81,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
 
             <div class="form-group mb-3">
                 <label id="usernameId" for="lastName">Uživatelské jméno:</label>
-                <input type="text" class="form-control" name="username" value=" <?= $user['username']; ?> ">
+                <input type="text" class="form-control" name="username" value="<?= $user['username']; ?> ">
             </div>
 
             <div class="form-group mb-3">
@@ -100,6 +100,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
             </div>
 
             <input type="hidden" name="page" value="users">
+            <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
 
             <button type="button" class="btn btn-primary" onclick="location.href='../Services/Message/SendMessage.php?receiver_id=<?= $user['id'] ?>'">
                 Poslat zprávu

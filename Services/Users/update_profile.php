@@ -19,10 +19,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $phone = $_POST['phone'];
     $page = $_POST['page'];
-    $id = $_SESSION['user_id'];
+    $userId = $_POST['user_id'];
     $count = 0;
 
-    var_dump($_SESSION['update_page']);
     unset($_SESSION['update_page']);
 
     // Ochrana před SQL injection
@@ -51,14 +50,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-
     $sql = "UPDATE users SET firstName = ?, lastName = ?,username = ? ,gender = ?, email = ?, phone = ? WHERE id = ?";
 
     // Prepare the statement
     $stmt = $conn->prepare($sql);
 
     // Bind parameters
-    $stmt->bind_param("sssssss", $firstName, $lastName, $username , $gender, $email, $phone, $id);
+    $stmt->bind_param("sssssss", $firstName, $lastName, $username , $gender, $email, $phone, $userId);
 
     // Execute the query
     if (!$stmt->execute()) {
@@ -68,7 +66,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
     $dbConnection->closeConnection();
 
-    header('Location: http://localhost/bvwa2/view/userprofile.php');
+    if($page == 'profile'){
+        header('Location: http://localhost/bvwa2/view/userprofile.php');
+    } else {
+        header('Location: http://localhost/bvwa2/view/users.php');
+    }
 
     exit();
 }
