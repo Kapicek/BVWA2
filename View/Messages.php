@@ -43,7 +43,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
 <body>
     <nav class="navbar navbar-dark bg-dark mb-4">
         <div class="container">
-            <a class="navbar-brand mx-auto" href="#">
+            <a class="navbar-brand mx-auto" href="UserProfile.php">
                 <h1>Zprávy</h1>
             </a>
         </div>
@@ -53,10 +53,8 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
             <!-- Tlačítko pro změnu na doručeno a odesláno -->
             <aside class="col-md-2">
                 <div class="d-flex flex-column align-items-center">
-                    <form id="messageActionsForm" action="#" method="post">
-                        <button onclick="showSection('received')" class="btn btn-success mb-2">Doručené</button>
-                        <button onclick="showSection('sended')" class="btn btn-primary mb-2">Odeslané</button>
-                    </form>
+                    <button onclick="showSection('received')" class="btn btn-success mb-2">Doručené</button>
+                    <button onclick="showSection('sended')" class="btn btn-primary mb-2">Odeslané</button>
                 </div>
             </aside>
 
@@ -101,7 +99,6 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
             // Skryj všechny sekce
             document.getElementById('received').classList.add('hidden');
             document.getElementById('sended').classList.add('hidden');
-
             // Zobraz vybranou sekci
             document.getElementById(sectionId).classList.remove('hidden');
         }

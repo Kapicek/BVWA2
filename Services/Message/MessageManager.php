@@ -94,7 +94,7 @@ public function getAllMessagesByUser($user_id) {
                    users.firstName AS krestni, 
                    users.lastName AS prijmeni
             FROM messages
-            JOIN users ON messages.sender_id = users.id
+            JOIN users ON messages.receiver_id = users.id
             WHERE messages.sender_id = ?";
 
     // Připravení a provedení připraveného dotazu s bind_param
