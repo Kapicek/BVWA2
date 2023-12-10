@@ -17,33 +17,35 @@ class MessageManager
         $this->dbConnection = new DbConnection();
     }
 
-    public function saveMessage($sender_id, $receiver_id, $content)
-    {
-        $conn = $this->dbConnection->getConnection();
+    public function saveMessage($sender_id, $receiver_id, $content, $iv)
+{
+    $conn = $this->dbConnection->getConnection();
 
-        // Příprava připraveného dotazu
-        $sql = "INSERT INTO messages (sender_id, receiver_id, content) VALUES (?, ?, ?)";
+    $iv_bin = hex2bin($iv);
+    // Příprava připraveného dotazu
+    $sql = "INSERT INTO messages (sender_id, receiver_id, content, key_iv) VALUES (?, ?, ?, ?)";
 
-        // Příprava a provedení připraveného dotazu
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sss", $sender_id, $receiver_id, $content);
-        $result = $stmt->execute();
+    // Příprava a provedení připraveného dotazu
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssss", $sender_id, $receiver_id, $content, $iv_bin);
+    $result = $stmt->execute();
 
-        // Uzavření spojení s databází
-        $this->dbConnection->closeConnection();
+    // Uzavření spojení s databází
+    $this->dbConnection->closeConnection();
 
-        return $result;
-    }
+    return $result;
+}
 
-    public function getAllMessagesForUser($user_id)
+
+
+public function getAllMessagesForUser($user_id)
 {
     $conn = $this->dbConnection->getConnection();
 
     // Příprava připraveného dotazu
     $sql = "SELECT messages.*, 
                    users.firstName AS krestni, 
-                   users.lastName AS prijmeni,
-                   AES_DECRYPT(UNHEX(messages.content), 'tajny_klic_pro_sifrovani', UNHEX(messages.klic)) AS decryptedContent
+                   users.lastName AS prijmeni
             FROM messages
             JOIN users ON messages.sender_id = users.id
             WHERE messages.receiver_id = ?";
@@ -53,6 +55,9 @@ class MessageManager
     $stmt->bind_param("s", $user_id);
     $stmt->execute();
 
+     // Klíč pro šifrování a dešifrování
+     $encryptionKey = "tajny_klic_pro_sifrovani";
+
     // Získání výsledků
     $result = $stmt->get_result();
 
@@ -60,8 +65,15 @@ class MessageManager
 
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
+            // Assuming $row['key_iv'] contains the IV (Initialization Vector)
+            $iv = $row['key_iv'];
+
+            // Assuming $row['content'] contains the encrypted content
+            // Decrypt the content using openssl_decrypt
+            $decryptedContent = openssl_decrypt($row['content'], 'aes-256-cbc', $encryptionKey, 0, $iv);
+
             // Add the decrypted content to the $row array
-            $row['decryptedContent'] = $row['decryptedContent'];
+            $row['decryptedContent'] = $decryptedContent;
 
             // Add the modified row to the messages array
             $messages[] = $row;
@@ -73,7 +85,6 @@ class MessageManager
 
     return $messages;
 }
-
 
 
 

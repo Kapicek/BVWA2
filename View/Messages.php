@@ -64,7 +64,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                             </div>
                             <div class="card-body">
                                 <p class="card-text">
-                                    <?php echo $message['content']; ?>
+                                    <?php echo $message['decryptedContent']; ?>
                                 </p>
                             </div>
                         </div>
