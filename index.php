@@ -1,3 +1,14 @@
+<?php
+session_start();
+
+if (isset($_COOKIE["user"])) {
+    echo '<script>alert("Již jste přihlášen")</script>';
+    echo '<script>window.location="./View/UserProfile.php"</script>';
+}
+
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,7 +37,7 @@
 
         <div class="mb-3">
             <label for="loginPassword" class="form-label">Heslo:</label>
-            <input type="password" class="form-control" id="loginPassword" name="loginPassword" placeholder="Zadejte email" required>
+            <input type="password" class="form-control" id="loginPassword" name="loginPassword" placeholder="Zadejte heslo" required>
         </div>
 
         <div class="form-buttons">
@@ -79,6 +90,11 @@
         <div class="mb-3">
             <label for="password" class="form-label">Heslo:</label>
             <input type="password" class="form-control" id="password" name="password" placeholder="Zadejte heslo" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="password"2 class="form-label">Heslo znovu:</label>
+            <input type="password" class="form-control" id="password2" name="password2" placeholder="Zadejte heslo znovu" required>
         </div>
 
         <div class="form-buttons">
