@@ -233,13 +233,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             // Uživatel nalezen
             $row = $result->fetch_assoc();
-                // Heslo je platné
-                setcookie("user", $row["id"], time() + 1200);
-                setcookie("perm", $row["permission"], time() + 1200);
+            // Heslo je platné
+            setcookie("user_id", $row["id"], time() + 1200);
+            setcookie("username", $row["id"], time() + 1200);
+            setcookie("perm", $row["permission"], time() + 1200);
 
-                // Pokud je přihlášený uživatel admin, přesměruje ho
-                echo '<script>alert("Registrace úspěšná")</script>';
-                echo '<script>window.location="../../View/UserProfile.php"</script>';
+            // Pokud je přihlášený uživatel admin, přesměruje ho
+            echo '<script>alert("Registrace úspěšná")</script>';
+            echo '<script>window.location="../../View/UserProfile.php"</script>';
         }
 
     } else {

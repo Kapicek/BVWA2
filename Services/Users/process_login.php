@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $xss_reg = '/[<>]/';
 
-    preg_match($xss_reg,  $loginUsername, $matches);
+    preg_match($xss_reg, $loginUsername, $matches);
     if (count($matches) > 0) {
 
         echo '<script>alert("Usernamenesmí obsahovat < nebo >")</script>';
@@ -41,7 +41,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $row = $result->fetch_assoc();
         if (password_verify($loginPassword, $row['password'])) {
             // Heslo je platné
-            setcookie("user", $row["id"], time() + 1200);
+            setcookie("user_id", $row["id"], time() + 1200);
+            setcookie("username", $row["id"], time() + 1200);
             setcookie("perm", $row["permission"], time() + 1200);
 
             // Pokud je přihlášený uživatel admin, přesměruje ho
