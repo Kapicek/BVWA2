@@ -5,7 +5,7 @@ namespace Services\Message;
 
 use Database\DbConnection;
 
-require_once(__DIR__.'/../../Database/DbConnection.php');
+require_once(__DIR__ . '/../../Database/DbConnection.php');
 
 class MessageManager
 {
@@ -21,14 +21,13 @@ class MessageManager
     {
         $conn = $this->dbConnection->getConnection();
 
-        // Ochrana před SQL injection
-        $sender_id = mysqli_real_escape_string($conn, $sender_id);
-        $receiver_id = mysqli_real_escape_string($conn, $receiver_id);
-        $content = mysqli_real_escape_string($conn, $content);
+        // Příprava připraveného dotazu
+        $sql = "INSERT INTO messages (sender_id, receiver_id, content) VALUES (?, ?, ?)";
 
-        // Uložení zprávy do databáze
-        $sql = "INSERT INTO messages (sender_id, receiver_id, content) VALUES ('$sender_id', '$receiver_id', '$content')";
-        $result = $conn->query($sql);
+        // Příprava a provedení připraveného dotazu
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sss", $sender_id, $receiver_id, $content);
+        $result = $stmt->execute();
 
         // Uzavření spojení s databází
         $this->dbConnection->closeConnection();
@@ -40,15 +39,19 @@ class MessageManager
     {
         $conn = $this->dbConnection->getConnection();
 
-        // Ochrana před SQL injection
-        $user_id = mysqli_real_escape_string($conn, $user_id);
-
-        // Získání všech zpráv pro konkrétního uživatele
+        // Příprava připraveného dotazu
         $sql = "SELECT messages.*, users.firstName AS krestni, users.lastName AS prijmeni
             FROM messages
             JOIN users ON messages.sender_id = users.id
-            WHERE messages.receiver_id = '$user_id'";
-        $result = $conn->query($sql);
+            WHERE messages.receiver_id = ?";
+
+        // Připravení a provedení připraveného dotazu s bind_param
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $user_id);
+        $stmt->execute();
+
+        // Získání výsledků
+        $result = $stmt->get_result();
 
         $messages = array();
 
@@ -63,6 +66,7 @@ class MessageManager
 
         return $messages;
     }
+
 }
 
 ?>

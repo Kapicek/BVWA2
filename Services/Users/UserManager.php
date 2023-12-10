@@ -5,7 +5,7 @@ namespace Services\Users;
 
 use Database\DbConnection;
 
-require_once(__DIR__.'/../../Database/DbConnection.php');
+require_once(__DIR__ . '/../../Database/DbConnection.php');
 
 class UserManager
 {
@@ -43,10 +43,16 @@ class UserManager
     {
         $conn = $this->dbConnection->getConnection();
 
-        // Získání informací o uživateli podle ID
-        $user_id = mysqli_real_escape_string($conn, $user_id);
-        $sql = "SELECT * FROM users WHERE id = '$user_id'";
-        $result = $conn->query($sql);
+        // Připravený dotaz
+        $sql = "SELECT * FROM users WHERE id = ?";
+
+        // Příprava a provedení připraveného dotazu
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $user_id);
+        $stmt->execute();
+
+        // Získání výsledků
+        $result = $stmt->get_result();
 
         if ($result->num_rows == 1) {
             $user = $result->fetch_assoc();
@@ -62,6 +68,7 @@ class UserManager
             return null; // Uživatel nenalezen
         }
     }
+
 }
 
 ?>
