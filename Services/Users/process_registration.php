@@ -25,22 +25,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $profilePicTmp = $_FILES['profilePic']['tmp_name'];
 
     // Příprava nových rozměrů (maximální šířka a výška)
-    $maxWidth = 800;
-    $maxHeight = 800;  // Můžete použít různé hodnoty pro šířku a výšku podle potřeby
 
-    list($width, $height, $type) = getimagesize($profilePicTmp);
+    list($width, $height) = getimagesize($profilePicTmp);
 
-
-
-    $aspectRatio = $width / $height;
-
-    if ($width > $height) {
-        $newWidth = $maxWidth;
-        $newHeight = $maxWidth / $aspectRatio;
-    } else {
-        $newHeight = $maxHeight;
-        $newWidth = $maxHeight * $aspectRatio;
-    }
+    $newWidth = 800;
+    $newHeight = ($height / $width) * $newWidth;
 
     // Vytvoření prázdného obrázku s novými rozměry
     $convertedProfilePic = imagecreatetruecolor($newWidth, $newHeight);
