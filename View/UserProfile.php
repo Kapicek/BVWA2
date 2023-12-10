@@ -84,7 +84,9 @@ if (isset($_POST["sub"])) {
     </nav>
     <section>
         <form id="user-card" class="mt-3" method="post" action="/bvwa2/Services/Users/update_profile.php">
-            <img src="data:image/jpeg;base64,<?= base64_encode($user['profilePic']) ?>" alt="Profilová fotografie">
+            <div class="container">
+                <img src="data:image/jpeg;base64,<?= base64_encode($user['profilePic']) ?>" alt="Profilová fotografie" class="img-fluid" style="width: 200px; height: 200px;">
+            </div>
 
             <div class="form-group mb-3">
                 <label for="firstName">Jméno:</label>
