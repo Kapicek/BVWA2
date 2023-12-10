@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Získání všech uživatelů
     $user = $userManager->getUserById($userId);
-    
+
     $iv_bin = $user["key_iv"];
 
     $encryptedEmail = openssl_encrypt($email, 'aes-256-cbc', $encryptionKey, 0, $iv_bin);
@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmtCheck->fetch();
     $stmtCheck->close();
 
-    if ($count > 0) {
+    if ($count > 1) {
         // Uzivatel uz existuje
         if($page == 'profile'){
             $_SESSION['error_user_update'] = "Uživatel s tímto jménem již existuje";
