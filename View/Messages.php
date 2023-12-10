@@ -28,6 +28,7 @@ if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE[
 
 } else {
     // Pokud uživatel není přihlášen, přesměrujte ho na přihlašovací stránku
+    echo '<script>alert("Nejsi přihlášen")</script>';
     echo '<script>window.location="../index.php"</script>';
     exit();
 }

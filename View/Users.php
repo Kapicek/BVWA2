@@ -26,6 +26,7 @@ if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE[
     $allUsers = $userManager->getAllUsers();
 } else {
     // Pokud uživatel není přihlášen, přesměrujte ho na přihlašovací stránku
+    echo '<script>alert("Nejsi přihlášen, nebo nemáš oprávnění")</script>';
     echo '<script>window.location="../index.php"</script>';
     exit();
 }
