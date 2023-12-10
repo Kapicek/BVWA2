@@ -5,7 +5,7 @@ use Services\Users\UserManager;
 session_start();
 
 if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE["perm"])) {
-
+     $username = $_COOKIE["username"];
 } else {
     // Pokud uživatel není přihlášen, přesměrujte ho na přihlašovací stránku
     echo '<script>alert("Nejsi přihlášen!")</script>';
