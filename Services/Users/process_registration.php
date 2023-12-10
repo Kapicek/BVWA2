@@ -234,9 +234,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Uživatel nalezen
             $row = $result->fetch_assoc();
             // Heslo je platné
-            setcookie("user_id", $row["id"], time() + 1200);
-            setcookie("username", $row["id"], time() + 1200);
-            setcookie("perm", $row["permission"], time() + 1200);
+            setcookie("user_id", $row["id"], time() + 1200, "/");
+            setcookie("username", $row["username"], time() + 1200, "/");
+            setcookie("perm", $row["permission"], time() + 1200, "/");
 
             // Pokud je přihlášený uživatel admin, přesměruje ho
             echo '<script>alert("Registrace úspěšná")</script>';

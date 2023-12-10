@@ -4,19 +4,12 @@ use Services\Users\UserManager;
 
 session_start();
 
-if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
-    // Import třídy UserManager
-    require_once(__DIR__ . '/../Users/UserManager.php');
+if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE["perm"])) {
 
-    // Vytvoření instance třídy UserManager
-    $userManager = new UserManager();
-
-    // Získání informací o přihlášeném uživateli
-    $user_id = $_SESSION['user_id'];
-    $username = $_SESSION['username'];
 } else {
     // Pokud uživatel není přihlášen, přesměrujte ho na přihlašovací stránku
-    //header('Location: login.php');
+    echo '<script>alert("Nejsi přihlášen!")</script>';
+    echo '<script>window.location="../../index.php"</script>';
     exit();
 }
 ?>

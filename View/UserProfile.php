@@ -3,12 +3,12 @@ use Services\Users\UserManager;
 
 session_start();
 
-if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
-    $user_id = $_SESSION['user_id'];
-    $username = $_SESSION['username'];
+if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE["perm"])) {
+    $user_id = $_COOKIE["user_id"];
+    $username = $_COOKIE["username"];
 
     // Importujte třídu UserManager
-    require_once(__DIR__.'/../Services/Users/UserManager.php');
+    require_once(__DIR__ . '/../Services/Users/UserManager.php');
 
     // Vytvořte instanci třídy UserManager
     $userManager = new UserManager();
@@ -18,7 +18,9 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
 } else {
 
     // Pokud uživatel není přihlášen, přesměrujte ho na přihlašovací stránku
-    header('Location: ../Services/Users/process_login.php');
+
+    echo '<script>alert("Nejsi přihlášen")</script>';
+    echo '<script>window.location="../index.php"</script>';
     exit();
 }
 
@@ -26,59 +28,70 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../userStyles.css">
     <script src="/bvwa2/js/UserProfile.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <title>Profil</title>
 </head>
+
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#"><?php echo $user['username'] ?></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item ">
-                    <a class="nav-link" href="Messages.php">InBox</a>
-                </li>
-                <?php
-                    if($user['permission'] == 1) {
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <?php echo $user['username'] ?>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item ">
+                        <a class="nav-link" href="Messages.php">InBox</a>
+                    </li>
+                    <?php
+                    if ($user['permission'] == 1) {
                         echo '<li class="nav-item"> <a class="nav-link float-left" href="Users.php">Uzivatele</a> </li>';
                     }
-                ?>
-            </ul>
+                    ?>
+                </ul>
+            </div>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item ">
+                        <a class="nav-link" href="../index.php">Odhlásit
+                            <?php   
+                            setcookie("user_id", "", time() - 36000, "/");
+                            setcookie("username", time() - 36000, "/");
+                            setcookie("perm", time() - 36000, "/"); ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item ">
-                    <a class="nav-link" href="../index.php">Odhlásit</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-<section>
-    <form id="user-card" class="mt-3" method="post" action="/bvwa2/Services/Users/update_profile.php">
-        <img src="data:image/jpeg;base64,<?= base64_encode($user['profilePic']) ?>" alt="Profilová fotografie">
+    </nav>
+    <section>
+        <form id="user-card" class="mt-3" method="post" action="/bvwa2/Services/Users/update_profile.php">
+            <img src="data:image/jpeg;base64,<?= base64_encode($user['profilePic']) ?>" alt="Profilová fotografie">
 
-        <div class="form-group mb-3">
-            <label for="firstName">Jméno:</label>
-            <input type="text" class="form-control" name="firstName" value="<?= $user['firstName']; ?>" readonly>
-        </div>
+            <div class="form-group mb-3">
+                <label for="firstName">Jméno:</label>
+                <input type="text" class="form-control" name="firstName" value="<?= $user['firstName']; ?>" readonly>
+            </div>
 
-        <div class="form-group mb-3">
-            <label for="lastName">Příjmení:</label>
-            <input type="text" class="form-control" name="lastName" value="<?= $user['lastName']; ?>" readonly>
-        </div>
+            <div class="form-group mb-3">
+                <label for="lastName">Příjmení:</label>
+                <input type="text" class="form-control" name="lastName" value="<?= $user['lastName']; ?>" readonly>
+            </div>
 
-        <div class="form-group mb-3">
-            <?php
+            <div class="form-group mb-3">
+                <?php
                 $userExist = $_SESSION['error_user_update'] ?? null;
                 unset($_SESSION['error_user_update']);
                 if ($userExist != null) {
@@ -87,36 +100,42 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                     echo '<label for="lastName">Uživatelské jméno:</label>';
                 }
                 echo '<input type="text" class="form-control" name="username" value="' . $user['username'] . '" readonly>';
-            ?>
-        </div>
+                ?>
+            </div>
 
-        <div class="form-group mb-3">
-            <label for="lastName">Pohlaví:</label>
-            <input type="text" class="form-control" name="gender" value="<?= $user['gender']; ?>" readonly>
-        </div>
+            <div class="form-group mb-3">
+                <label for="lastName">Pohlaví:</label>
+                <input type="text" class="form-control" name="gender" value="<?= $user['gender']; ?>" readonly>
+            </div>
 
-        <div class="form-group mb-3">
-            <label for="email">Email:</label>
-            <input id="emailInput" type="text" class="form-control" name="email" value="<?= $user['email']; ?>" readonly>
-        </div>
+            <div class="form-group mb-3">
+                <label for="email">Email:</label>
+                <input id="emailInput" type="text" class="form-control" name="email" value="<?= $user['email']; ?>"
+                    readonly>
+            </div>
 
-        <div class="form-group mb-3">
-            <label for="phone">Telefon:</label>
-            <input id="phoneInput" type="text" class="form-control" name="phone" value="<?= $user['phone']; ?>" readonly>
-        </div>
+            <div class="form-group mb-3">
+                <label for="phone">Telefon:</label>
+                <input id="phoneInput" type="text" class="form-control" name="phone" value="<?= $user['phone']; ?>"
+                    readonly>
+            </div>
 
-        <input type="hidden" name="page" value="profile">
+            <input type="hidden" name="page" value="profile">
 
-        <div class="form-group mb-3">
-            <button type="button" class="btn btn-primary" id="editButton" onclick="toggleEditMode()">Editovat profil</button>
-            <button type="button" class="btn btn-success" id="saveChangesButton" onclick="saveChanges()" style="display: none;">Uložit změny</button>
-            <button type="button" class="btn btn-secondary" id="cancelButton" onclick="cancelChanges()" style="display: none;">Zrušit</button>
-        </div>
+            <div class="form-group mb-3">
+                <button type="button" class="btn btn-primary" id="editButton" onclick="toggleEditMode()">Editovat
+                    profil</button>
+                <button type="button" class="btn btn-success" id="saveChangesButton" onclick="saveChanges()"
+                    style="display: none;">Uložit změny</button>
+                <button type="button" class="btn btn-secondary" id="cancelButton" onclick="cancelChanges()"
+                    style="display: none;">Zrušit</button>
+            </div>
 
-    </form>
-</section>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        </form>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
 </body>
+
 </html>

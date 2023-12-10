@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (isset($_COOKIE["user"])) {
+if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE["perm"])) {
     echo '<script>alert("Již jste přihlášen")</script>';
     echo '<script>window.location="./View/UserProfile.php"</script>';
 }

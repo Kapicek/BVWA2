@@ -7,7 +7,7 @@ use Services\Message\MessageManager;
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
+    if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE["perm"])) {
         // Import třídy MessageManager
         require_once(__DIR__.'/../Message/MessageManager.php');
 
@@ -15,8 +15,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $messageManager = new MessageManager();
 
         // Získání informací o odesílateli a příjemci
-        $sender_id = $_SESSION['user_id'];
-        $username = $_SESSION['username'];
+        $sender_id =$_COOKIE["user_id"];
+        $username = $_COOKIE["username"];
         $receiverUsername = $_POST['receiverUsername'];
         if($username === $receiverUsername) {
             $_SESSION['error_message'] = 'Nemůžete posílat zprávu sám sobě';
