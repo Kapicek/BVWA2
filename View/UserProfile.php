@@ -24,6 +24,15 @@ if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE[
     exit();
 }
 
+if (isset($_POST["sub"])) {
+
+    setcookie("user_id", "", time() - 36000, "/");
+    setcookie("username", "", time() - 36000, "/");
+    setcookie("perm", "", time() - 36000, "/");
+    echo '<script>alert("Byl jste odhlášen")</script>';
+    echo '<script>window.location="../index.php"</script>';
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -65,12 +74,9 @@ if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE[
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item ">
-                        <a class="nav-link" href="../index.php">Odhlásit
-                            <?php   
-                            setcookie("user_id", "", time() - 36000, "/");
-                            setcookie("username", time() - 36000, "/");
-                            setcookie("perm", time() - 36000, "/"); ?>
-                        </a>
+                        <form action="#" method="POST">
+                            <input type="submit" name="sub" class="btn btn-danger" value="Odhlásit">
+                        </form>
                     </li>
                 </ul>
             </div>

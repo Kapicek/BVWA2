@@ -3,9 +3,9 @@ use Services\Message\MessageManager;
 
 session_start();
 
-if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
-    $user_id = $_SESSION['user_id'];
-    $username = $_SESSION['username'];
+if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE["perm"])) {
+    $user_id = $_COOKIE["user_id"];
+    $username = $_COOKIE["username"];
     var_dump($user_id);
 
     // Importujte třídu MessageManager
