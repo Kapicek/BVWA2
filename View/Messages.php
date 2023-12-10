@@ -28,7 +28,7 @@ if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE[
 
 } else {
     // Pokud uživatel není přihlášen, přesměrujte ho na přihlašovací stránku
-    header('Location: ../Services/Users/process_login.php');
+    echo '<script>window.location="../index.php"</script>';
     exit();
 }
 ?>
