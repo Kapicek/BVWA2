@@ -6,6 +6,11 @@ session_start();
 if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE["perm"])) {
     $user_id = $_COOKIE["user_id"];
     $username = $_COOKIE["username"];
+    $perm = $_COOKIE["perm"];
+
+    setcookie("user_id", $user_id , time() + 1200, "/");
+    setcookie("username", $username, time() + 1200, "/");
+    setcookie("perm", $perm, time() + 1200, "/");
 
     // Importujte třídu MessageManager
     require_once(__DIR__ . '/../Services/Message/MessageManager.php');
