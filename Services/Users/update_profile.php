@@ -1,16 +1,22 @@
 <?php
 
 use Database\DbConnection;
+use Services\Users\UserManager;
 
 session_start();
 
 // Importovat třídu DbConnection
 require_once(__DIR__.'/../../Database/DbConnection.php');
+include_once('UserManager.php');
+
 
 $dbConnection = new DbConnection();
 $conn = $dbConnection->getConnection();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+
+    
     // Získání dat z přihlašovacího formuláře
     $firstName = $_POST['firstName'];
     $lastName = $_POST['lastName'];
@@ -21,6 +27,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $page = $_POST['page'];
     $userId = $_POST['user_id'];
     $count = 0;
+
+
+    // Vytvořte instanci třídy UserManager
+    $userManager = new UserManager();
+
+    // Klíč pro rozšifrování
+    $encryptionKey = "tajny_klic_pro_sifrovani";
+
+    // Získání všech uživatelů
+    $user = $userManager->getUserById($userId);
+    
+    $iv_bin = $user["key_iv"];
+
+    $encryptedEmail = openssl_encrypt($email, 'aes-256-cbc', $encryptionKey, 0, $iv_bin);
+
+    $encryptedPhone = openssl_encrypt($phone, 'aes-256-cbc', $encryptionKey, 0, $iv_bin);
 
     unset($_SESSION['update_page']);
 
@@ -56,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt = $conn->prepare($sql);
 
     // Bind parameters
-    $stmt->bind_param("sssssss", $firstName, $lastName, $username , $gender, $email, $phone, $userId);
+    $stmt->bind_param("sssssss", $firstName, $lastName, $username , $gender, $encryptedEmail, $encryptedPhone, $userId);
 
     // Execute the query
     if (!$stmt->execute()) {
