@@ -61,6 +61,9 @@ if (isset($_POST["sub"])) {
                     <li class="nav-item ">
                         <a class="nav-link" href="UserProfile.php">Profil</a>
                     </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="Messages.php">InBox</a>
+                    </li>
                 </ul>
             </div>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
@@ -101,32 +104,32 @@ if (isset($_POST["sub"])) {
 
 
                 <div class="form-group mb-3">
-                    <label for="firstName">Jméno:</label>
+                    <label>Jméno:</label>
                     <input type="text" class="form-control" name="firstName" value="<?= $user['firstName']; ?>">
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="lastName">Příjmení:</label>
+                    <label>Příjmení:</label>
                     <input type="text" class="form-control" name="lastName" value="<?= $user['lastName']; ?>">
                 </div>
 
                 <div class="form-group mb-3">
-                    <label id="usernameId" for="lastName">Uživatelské jméno:</label>
+                    <label id="usernameId">Uživatelské jméno:</label>
                     <input type="text" class="form-control" name="username" value="<?= $user['username']; ?> ">
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="lastName">Pohlaví:</label>
+                    <label>Pohlaví:</label>
                     <input type="text" class="form-control" name="gender" value="<?= $user['gender']; ?>">
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="email">Email:</label>
+                    <label>Email:</label>
                     <input id="emailInputId" type="text" class="form-control" name="email" value="<?= $user['email']; ?>">
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="phone">Telefon:</label>
+                    <label>Telefon:</label>
                     <input id="phoneInputId" type="text" class="form-control" name="phone" value="<?= $user['phone']; ?>">
                 </div>
 
