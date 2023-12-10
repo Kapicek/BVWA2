@@ -1,5 +1,14 @@
 const values = new Map();
 
+setTimeout(function() {
+    var element = document.getElementById('usernameId');
+    if (element) {
+        element.style.color = 'black';
+        element.innerHTML = 'Uživatelské jméno:';
+        window.location.search = '';
+    }
+}, 2000)
+
 function toggleEditMode() {
     let userCard = document.getElementById('user-card');
     let inputs = userCard.querySelectorAll('.form-control');

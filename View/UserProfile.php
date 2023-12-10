@@ -47,14 +47,18 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                 <li class="nav-item ">
                     <a class="nav-link" href="Messages.php">InBox</a>
                 </li>
-                <li class="nav-item ">
-                    <a class="nav-link" href="../index.php">Odhlásit</a>
-                </li>
                 <?php
                     if($user['permission'] == 1) {
                         echo '<li class="nav-item"> <a class="nav-link float-left" href="Users.php">Uzivatele</a> </li>';
                     }
                 ?>
+            </ul>
+        </div>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item ">
+                    <a class="nav-link" href="../index.php">Odhlásit</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -74,8 +78,15 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
         </div>
 
         <div class="form-group mb-3">
-            <label for="lastName">Uživatelské jméno:</label>
-            <input type="text" class="form-control" name="username" value="<?= $user['username']; ?>" readonly>
+            <?php
+                $userExist = $_GET['userExist'] ?? 0;
+                if ($userExist == 1) {
+                    echo '<label id="usernameId" for="lastName" style="color: red;">Uživatelské jméno: již existuje</label>';
+                } else {
+                    echo '<label for="lastName">Uživatelské jméno:</label>';
+                }
+                echo '<input type="text" class="form-control" name="username" value="' . $user['username'] . '" readonly>';
+            ?>
         </div>
 
         <div class="form-group mb-3">
