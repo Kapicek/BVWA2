@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Pokud je přihlášený uživatel admin, přesměruje ho
             if($isAdmin == 1) {
-                header('Location: http://localhost/bvwa2/view/users.php'); //FIXME fixnout tohle Kubo <3
+                header('Location: http://localhost/bvwa2/view/userprofile.php'); //FIXME fixnout tohle Kubo <3
             } else {
                 header('Location: http://localhost/bvwa2/view/userprofile.php');
             }
