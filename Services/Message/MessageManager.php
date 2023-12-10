@@ -36,36 +36,46 @@ class MessageManager
     }
 
     public function getAllMessagesForUser($user_id)
-    {
-        $conn = $this->dbConnection->getConnection();
+{
+    $conn = $this->dbConnection->getConnection();
 
-        // Příprava připraveného dotazu
-        $sql = "SELECT messages.*, users.firstName AS krestni, users.lastName AS prijmeni
+    // Příprava připraveného dotazu
+    $sql = "SELECT messages.*, 
+                   users.firstName AS krestni, 
+                   users.lastName AS prijmeni,
+                   AES_DECRYPT(UNHEX(messages.content), 'tajny_klic_pro_sifrovani', UNHEX(messages.klic)) AS decryptedContent
             FROM messages
             JOIN users ON messages.sender_id = users.id
             WHERE messages.receiver_id = ?";
 
-        // Připravení a provedení připraveného dotazu s bind_param
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $user_id);
-        $stmt->execute();
+    // Připravení a provedení připraveného dotazu s bind_param
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $user_id);
+    $stmt->execute();
 
-        // Získání výsledků
-        $result = $stmt->get_result();
+    // Získání výsledků
+    $result = $stmt->get_result();
 
-        $messages = array();
+    $messages = array();
 
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $messages[] = $row;
-            }
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            // Add the decrypted content to the $row array
+            $row['decryptedContent'] = $row['decryptedContent'];
+
+            // Add the modified row to the messages array
+            $messages[] = $row;
         }
-
-        // Uzavření spojení s databází
-        $this->dbConnection->closeConnection();
-
-        return $messages;
     }
+
+    // Uzavření spojení s databází
+    $this->dbConnection->closeConnection();
+
+    return $messages;
+}
+
+
+
 
 }
 

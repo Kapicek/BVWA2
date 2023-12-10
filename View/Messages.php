@@ -1,7 +1,6 @@
 <?php
 use Services\Message\MessageManager;
 
-
 session_start();
 
 if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
@@ -43,20 +42,38 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
             </a>
         </div>
     </nav>
-    <section class="mb-4">
-        <?php foreach ($allMessages as $message) { ?>
-            <div class="card mb-3 bg-dark text-light">
-                <div class="card-header">
-                    <?php echo $message['krestni'] . ' ' . $message['prijmeni']; ?> vám posílá zprávu:
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Tlačítko pro změnu na doručeno a odesláno -->
+            <aside class="col-md-2">
+                <div class="d-flex flex-column align-items-center">
+                    <form id="messageActionsForm" action="#" method="post">
+                        <button type="submit" name="dorucene" class="btn btn-success mb-2">Doručené</button>
+                        <button type="submit" name="odeslane" class="btn btn-primary mb-2">Odeslané</button>
+                    </form>
                 </div>
-                <div class="card-body">
-                    <p class="card-text">
-                        <?php echo $message['content']; ?>
-                    </p>
-                </div>
-            </div>
-        <?php } ?>
-    </section>
+            </aside>
+
+            <!-- Zprávy -->
+            <main class="col-md-10">
+                <section class="mb-4">
+                    <?php foreach ($allMessages as $message) { ?>
+                        <div class="card mb-3 bg-dark text-light">
+                            <div class="card-header">
+                                <?php echo $message['krestni'] . ' ' . $message['prijmeni']; ?> vám posílá zprávu:
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <?php echo $message['content']; ?>
+                                </p>
+                            </div>
+                        </div>
+                    <?php } ?>
+                </section>
+            </main>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
