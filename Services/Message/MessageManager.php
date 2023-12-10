@@ -18,170 +18,221 @@ class MessageManager
     }
 
     public function saveMessage($sender_id, $receiverUsername, $content, $iv)
-{
-    $conn = $this->dbConnection->getConnection();
+    {
+        $conn = $this->dbConnection->getConnection();
 
-    // Získání id podle uživatelského jména
-    $receiver_id = $this->getReceiverIdByUsername($receiverUsername);
+        // Získání id podle uživatelského jména
+        $receiver_id = $this->getReceiverIdByUsername($receiverUsername);
 
-    // validace id
-    if ($receiver_id === null) {
-        $_SESSION['error_message'] = 'Uživatel s tímto jménem nebyl nalezen.';
-        return;
+        // validace id
+        if ($receiver_id === null) {
+            $_SESSION['error_message'] = 'Uživatel s tímto jménem nebyl nalezen.';
+            return;
+        }
+
+        $iv_bin = hex2bin($iv);
+        // Příprava připraveného dotazu
+        $sql = "INSERT INTO messages (sender_id, receiver_id, content, key_iv) VALUES (?, ?, ?, ?)";
+
+        // Příprava a provedení připraveného dotazu
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssss", $sender_id, $receiver_id, $content, $iv_bin);
+        $result = $stmt->execute();
+
+        // Uzavření spojení s databází
+        $this->dbConnection->closeConnection();
+        $_SESSION['success_message'] = 'Zpráva byla úspěšně odeslána.';
+        return $result;
     }
 
-    $iv_bin = hex2bin($iv);
-    // Příprava připraveného dotazu
-    $sql = "INSERT INTO messages (sender_id, receiver_id, content, key_iv) VALUES (?, ?, ?, ?)";
+    private function getReceiverIdByUsername($username)
+    {
+        $conn = $this->dbConnection->getConnection();
 
-    // Příprava a provedení připraveného dotazu
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $sender_id, $receiver_id, $content, $iv_bin);
-    $result = $stmt->execute();
+        // Příprava dotazu
+        $sql = "SELECT id FROM users WHERE username = ?";
+        $stmt = $conn->prepare($sql);
 
-    // Uzavření spojení s databází
-    $this->dbConnection->closeConnection();
-    $_SESSION['success_message'] = 'Zpráva byla úspěšně odeslána.';
-    return $result;
-}
+        // Bindování
+        $stmt->bind_param("s", $username);
 
-private function getReceiverIdByUsername($username) {
-    $conn = $this->dbConnection->getConnection();
+        $stmt->execute();
 
-    // Příprava dotazu
-    $sql = "SELECT id FROM users WHERE username = ?";
-    $stmt = $conn->prepare($sql);
-    
-    // Bindování
-    $stmt->bind_param("s", $username);
+        // Získání výsledku
+        $result = $stmt->get_result();
 
-    $stmt->execute();
-
-    // Získání výsledku
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $receiver_id = $row['id'];
-        return $receiver_id;
-    } else {
-        return null;
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $receiver_id = $row['id'];
+            return $receiver_id;
+        } else {
+            return null;
+        }
     }
-}
 
 
-public function getAllMessagesForUser($user_id)
-{
-    $conn = $this->dbConnection->getConnection();
+    public function getAllMessagesForUser($user_id)
+    {
+        $conn = $this->dbConnection->getConnection();
 
-    // Příprava připraveného dotazu
-    $sql = "SELECT messages.*, 
+        // Příprava připraveného dotazu
+        $sql = "SELECT messages.*, 
                    users.firstName AS krestni, 
                    users.lastName AS prijmeni
             FROM messages
             JOIN users ON messages.sender_id = users.id
             WHERE messages.receiver_id = ?";
 
-    // Připravení a provedení připraveného dotazu s bind_param
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $user_id);
-    $stmt->execute();
+        // Připravení a provedení připraveného dotazu s bind_param
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $user_id);
+        $stmt->execute();
 
-    // Klíč pro šifrování a dešifrování
-    $encryptionKey = "tajny_klic_pro_sifrovani";
+        // Klíč pro šifrování a dešifrování
+        $encryptionKey = "tajny_klic_pro_sifrovani";
 
-    // Získání výsledků
-    $result = $stmt->get_result();
+        // Získání výsledků
+        $result = $stmt->get_result();
 
-    $messages = array();
+        $messages = array();
 
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            // Assuming $row['key_iv'] contains the IV (Initialization Vector)
-            $iv = $row['key_iv'];
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                // Assuming $row['key_iv'] contains the IV (Initialization Vector)
+                $iv = $row['key_iv'];
 
-            // Assuming $row['content'] contains the encrypted content
-            // Decrypt the content using openssl_decrypt
-            $decryptedContent = openssl_decrypt($row['content'], 'aes-256-cbc', $encryptionKey, 0, $iv);
+                // Assuming $row['content'] contains the encrypted content
+                // Decrypt the content using openssl_decrypt
+                $decryptedContent = openssl_decrypt($row['content'], 'aes-256-cbc', $encryptionKey, 0, $iv);
 
-            // Add the decrypted content to the $row array
-            $row['decryptedContent'] = $decryptedContent;
+                // Add the decrypted content to the $row array
+                $row['decryptedContent'] = $decryptedContent;
 
-            // Add the modified row to the messages array
-            $messages[] = $row;
+                // Add the modified row to the messages array
+                $messages[] = $row;
+            }
         }
+
+        // Uzavření spojení s databází
+        //$this->dbConnection->closeConnection();
+
+        return $messages;
     }
 
-    // Uzavření spojení s databází
-    //$this->dbConnection->closeConnection();
+    public function getAllMessagesByUser($user_id)
+    {
+        $conn = $this->dbConnection->getConnection();
 
-    return $messages;
-}
-
-public function getAllMessagesByUser($user_id) {
-    $conn = $this->dbConnection->getConnection();
-
-    // Příprava připraveného dotazu
-    $sql = "SELECT messages.*, 
+        // Příprava připraveného dotazu
+        $sql = "SELECT messages.*, 
                    users.firstName AS krestni, 
                    users.lastName AS prijmeni
             FROM messages
             JOIN users ON messages.receiver_id = users.id
             WHERE messages.sender_id = ?";
 
-    // Připravení a provedení připraveného dotazu s bind_param
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $user_id);
-    $stmt->execute();
+        // Připravení a provedení připraveného dotazu s bind_param
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $user_id);
+        $stmt->execute();
 
-     // Klíč pro šifrování a dešifrování
-     $encryptionKey = "tajny_klic_pro_sifrovani";
+        // Klíč pro šifrování a dešifrování
+        $encryptionKey = "tajny_klic_pro_sifrovani";
 
-    // Získání výsledků
-    $result = $stmt->get_result();
+        // Získání výsledků
+        $result = $stmt->get_result();
 
-    $messages = array();
+        $messages = array();
 
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            // Assuming $row['key_iv'] contains the IV (Initialization Vector)
-            $iv = $row['key_iv'];
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                // Assuming $row['key_iv'] contains the IV (Initialization Vector)
+                $iv = $row['key_iv'];
 
-            // Assuming $row['content'] contains the encrypted content
-            // Decrypt the content using openssl_decrypt
-            $decryptedContent = openssl_decrypt($row['content'], 'aes-256-cbc', $encryptionKey, 0, $iv);
+                // Assuming $row['content'] contains the encrypted content
+                // Decrypt the content using openssl_decrypt
+                $decryptedContent = openssl_decrypt($row['content'], 'aes-256-cbc', $encryptionKey, 0, $iv);
 
-            // Add the decrypted content to the $row array
-            $row['decryptedContent'] = $decryptedContent;
+                // Add the decrypted content to the $row array
+                $row['decryptedContent'] = $decryptedContent;
 
-            // Add the modified row to the messages array
-            $messages[] = $row;
+                // Add the modified row to the messages array
+                $messages[] = $row;
+            }
         }
+
+        // Uzavření spojení s databází
+        //$this->dbConnection->closeConnection();
+
+        return $messages;
     }
 
-    // Uzavření spojení s databází
-    //$this->dbConnection->closeConnection();
+    public function markMessageAsDisplayed($message_id)
+    {
+        $conn = $this->dbConnection->getConnection();
 
-    return $messages;
-}
+        // Příprava připraveného dotazu
+        $updateSql = "UPDATE messages SET is_displayed = 1 WHERE id = ?";
 
-public function markMessageAsDisplayed($message_id) {
-    $conn = $this->dbConnection->getConnection();
-    
-    // Příprava připraveného dotazu
-    $updateSql = "UPDATE messages SET is_displayed = 1 WHERE id = ?";
+        // Připravení a provedení připraveného dotazu s bind_param
+        $updateStmt = $conn->prepare($updateSql);
+        $updateStmt->bind_param("i", $message_id);
+        $updateStmt->execute();
 
-    // Připravení a provedení připraveného dotazu s bind_param
-    $updateStmt = $conn->prepare($updateSql);
-    $updateStmt->bind_param("i", $message_id);
-    $updateStmt->execute();
+        // Uzavření připraveného dotazu
+        $updateStmt->close();
 
-    // Uzavření připraveného dotazu
-    $updateStmt->close();
+        // Uzavření spojení s databází
+        $this->dbConnection->closeConnection();
+    }
 
-    // Uzavření spojení s databází
-    $this->dbConnection->closeConnection();
-}
+    public function deleteDisplayedMessage($message_id, $user_id)
+    {
+        $conn = $this->dbConnection->getConnection();
+
+        // Příprava dotazu pro získání hodnoty deletedFor
+        $selectSql = "SELECT deletedFor FROM messages WHERE id = ?";
+
+        // Přípravení a provedení dotazu s bind_param
+        $selectStmt = $conn->prepare($selectSql);
+        $selectStmt->bind_param("i", $message_id);
+        $selectStmt->execute();
+
+        // Přečtení hodnoty deletedFor
+        $selectStmt->bind_result($deletedForResult);
+        $selectStmt->fetch();
+
+        // Uzavření připraveného dotazu
+        $selectStmt->close();
+
+        // Kontrola hodnoty deletedFor a provedení odpovídající akce
+        if ($deletedForResult != 0) {
+            // Hodnota deletedFor není 0, takže provedeme DELETE
+            $deleteSql = "DELETE FROM messages WHERE id = ?";
+
+            // Připravení a provedení dotazu s bind_param pro DELETE
+            $deleteStmt = $conn->prepare($deleteSql);
+            $deleteStmt->bind_param("i", $message_id);
+            $deleteStmt->execute();
+
+            // Uzavření připraveného dotazu pro DELETE
+            $deleteStmt->close();
+        } else {
+            // Hodnota deletedFor je 0, takže provedeme UPDATE
+            $updateSql = "UPDATE messages SET deletedFor = ? WHERE id = ?";
+
+            // Připravení a provedení připraveného dotazu s bind_param pro UPDATE
+            $updateStmt = $conn->prepare($updateSql);
+            $updateStmt->bind_param("ii", $user_id, $message_id);
+            $updateStmt->execute();
+
+            // Uzavření připraveného dotazu pro UPDATE
+            $updateStmt->close();
+        }
+
+        // Uzavření spojení s databází
+        $this->dbConnection->closeConnection();
+    }
 
 }
 

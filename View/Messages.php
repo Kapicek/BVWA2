@@ -6,6 +6,7 @@ session_start();
 if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
     $user_id = $_SESSION['user_id'];
     $username = $_SESSION['username'];
+    var_dump($user_id);
 
     // Importujte třídu MessageManager
     require_once(__DIR__ . '/../Services/Message/MessageManager.php');
@@ -41,6 +42,10 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
         .message-header {
             cursor: pointer;
         }
+
+        #smazat {
+            float: right;
+        }
     </style>
 </head>
 
@@ -52,12 +57,27 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
             </a>
         </div>
     </nav>
+    <?php
+    // Zobrazit úspěšnou zprávu
+    if (isset($_SESSION['success_message'])) {
+        echo '<div id="success-alert" class="alert alert-success" role="alert">' . $_SESSION['success_message'] . '</div>';
+        unset($_SESSION['success_message']); // Smazat zprávu
+    }
+
+    // Zobrazit chybovou zprávu
+    if (isset($_SESSION['error_message'])) {
+        echo '<div id="error-alert" class="alert alert-danger" role="alert">' . $_SESSION['error_message'] . '</div>';
+        unset($_SESSION['error_message']); // Smazat zprávu
+    }
+
+    ?>
     <div class="container-fluid">
         <div class="row">
             <!-- Tlačítko pro změnu na doručeno a odesláno -->
             <aside class="col-md-2">
                 <div class="d-flex flex-column align-items-center">
-                    <button onclick="location.href='../Services/Message/SendMessage.php'" class="btn btn-danger mb-2">Nová zpráva</button>
+                    <button onclick="location.href='../Services/Message/SendMessage.php'"
+                        class="btn btn-danger mb-2">Nová zpráva</button>
                     <button onclick="showSection('received')" class="btn btn-success mb-2">Doručené</button>
                     <button onclick="showSection('sended')" class="btn btn-primary mb-2">Odeslané</button>
                 </div>
@@ -66,43 +86,59 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
             <!-- Zprávy -->
             <main class="col-md-10">
                 <section class="mb-4" id="received">
-                    <?php foreach ($allReceivedMessages as $message) { ?>
-                        <div
-                            class="card mb-3 <?php echo ($message['is_displayed'] == 1) ? 'bg-gray text-dark' : 'bg-dark text-light'; ?>">
-                            <div class="card-header message-header"
-                                onclick="toggleMessage(this, <?php echo $message['id']; ?>, <?php echo $message['is_displayed']; ?>, 1)">
-                                <?php echo $message['krestni'] . ' ' . $message['prijmeni']; ?> vám posílá zprávu:
+                    <?php foreach ($allReceivedMessages as $message) {
+                        if ($message['deletedFor'] != $user_id) {
+                            ?>
+                            <div
+                                class="card mb-3 <?php echo ($message['is_displayed'] == 1) ? 'bg-gray text-dark' : 'bg-dark text-light'; ?>">
+                                <div class="card-header message-header"
+                                    onclick="toggleMessage(this, <?php echo $message['id']; ?>, <?php echo $message['is_displayed']; ?>, 1)">
+                                    <?php echo $message['krestni'] . ' ' . $message['prijmeni']; ?> vám posílá zprávu:
+                                </div>
+                                <div class="card-body" style="display: none;">
+                                    <p class="card-text">
+                                        <?php echo $message['decryptedContent']; ?>
+                                        <button id="smazat" class="btn btn-danger btn-sm"
+                                            onclick="deleteMessage(<?php echo $message['id']; ?>,<?php echo $user_id; ?>)">Smazat zprávu</button>
+                                    </p>
+                                </div>
                             </div>
-                            <div class="card-body" style="display: none;">
-                                <p class="card-text">
-                                    <?php echo $message['decryptedContent']; ?>
-                                </p>
-                            </div>
-                        </div>
-                    <?php } ?>
+                            <?php
+                        }
+                    }
+                    ?>
                 </section>
 
                 <section class="mb-4" id="sended">
-                    <?php foreach ($allSendedMessages as $message) { ?>
-                        <div
-                            class="card mb-3 <?php echo ($message['is_displayed'] == 1) ? 'bg-gray text-dark' : 'bg-dark text-light'; ?>">
-                            <div class="card-header message-header"
-                                onclick="toggleMessage(this, <?php echo $message['id']; ?>, <?php echo $message['is_displayed']; ?>, 0)">
-                                <?php echo $message['krestni'] . ' ' . $message['prijmeni']; ?> vám posílá zprávu:
+                    <?php foreach ($allSendedMessages as $message) {
+                        if ($message['deletedFor'] != $user_id) {
+                            ?>
+                            <div
+                                class="card mb-3 <?php echo ($message['is_displayed'] == 1) ? 'bg-gray text-dark' : 'bg-dark text-light'; ?>">
+                                <div class="card-header message-header"
+                                    onclick="toggleMessage(this, <?php echo $message['id']; ?>, <?php echo $message['is_displayed']; ?>, 0)">
+                                    Odeslaná zpráva pro:
+                                    <?php echo $message['krestni'] . ' ' . $message['prijmeni']; ?>
+                                </div>
+                                <div class="card-body" style="display: none;">
+                                    <p class="card-text">
+                                        <?php echo $message['decryptedContent']; ?>
+                                        <button id="smazat" class="btn btn-danger btn-sm"
+                                            onclick="deleteMessage(<?php echo $message['id']; ?>,<?php echo $user_id; ?>)">Smazat zprávu</button>
+                                    </p>
+                                </div>
                             </div>
-                            <div class="card-body" style="display: none;">
-                                <p class="card-text">
-                                    <?php echo $message['decryptedContent']; ?>
-                                </p>
-                            </div>
-                        </div>
-                    <?php } ?>
+                            <?php
+                        }
+                    }
+                    ?>
                 </section>
+
             </main>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
+
 
     <script>
         function toggleMessage(element, messageId, isDisplayed, isReceiver) {
@@ -110,7 +146,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
 
             if (cardBody.style.display === 'none' || cardBody.style.display === '') {
                 cardBody.style.display = 'block';
-                if (isDisplayed === 0 && isReceiver == 1){
+                if (isDisplayed === 0 && isReceiver == 1) {
                     markMessageAsDisplayed(messageId);
                 }
             } else {
@@ -118,10 +154,22 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
             }
         }
 
+        function deleteMessage(messageId, user_id) {
+            console.log(user_id);
+            deleteMessageAjax(messageId, user_id);
+        }
+
         function markMessageAsDisplayed(messageId) {
-            // Make an AJAX request to call the PHP function
+            // AJAX
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "../Services/Users/update_message.php?action=markAsDisplayed&id=" + messageId, true);
+            xhr.send();
+        }
+
+        function deleteMessageAjax(messageId, user_id) {
+            // AJAX
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "../Services/Users/delete_message.php?action=deleteMessage&id=" + messageId + "&deletedFor=" + user_id, true);
             xhr.send();
         }
 
@@ -134,7 +182,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
         }
     </script>
 
-
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
