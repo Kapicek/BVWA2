@@ -10,10 +10,10 @@ require_once(__DIR__.'/../../Database/DbConnection.php');
 $dbConnection = new DbConnection();
 $conn = $dbConnection->getConnection();
 
-if(isset($_GET['user_id'])) {
+if(isset($_GET['user_id']) && isset($_GET['lvl']) ) {
 
     $userId = $_GET['user_id'];
-    $permission = -1;
+    $permission = $_GET['lvl'];
 
     $checkQuery = "SELECT COUNT(*) FROM users WHERE id = ?";
     $stmtCheck = $conn->prepare($checkQuery);

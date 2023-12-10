@@ -8,6 +8,7 @@ session_start();
 if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
     $user_id = $_SESSION['user_id'];
     $username = $_SESSION['username'];
+    $lvl = -1;
 
      // Importujte třídu UserManager
      require_once(__DIR__.'/../Services/Users/UserManager.php');
@@ -67,7 +68,19 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
     <section>
     <?php foreach ($allUsers as $user): ?>
         <form id="user-form" class="user-card form-group mb-5" method="post" action="/bvwa2/Services/Users/update_profile.php">
-            <img src="data:image/jpeg;base64,<?= base64_encode($user['profilePic']) ?>" alt="Profilová fotografie">
+            <div class="row">
+                <div class="col-md-6">
+                    <img src="data:image/jpeg;base64,<?= base64_encode($user['profilePic']) ?>" alt="Profilová fotografie" class="img-fluid">
+                </div>
+                <div class="col-md-6">
+                    <?php
+                    if ($user["permission"] == 1) {
+                        echo '<h5>Admin</h5>';
+                    }
+                    ?>
+                </div>
+            </div>
+
 
             <div class="form-group mb-3">
                 <label for="firstName">Jméno:</label>
@@ -106,7 +119,12 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                 Poslat zprávu
             </button>
             <button type="submit" class="btn btn-primary" ">Uložit změny</button>
-            <button type="button" class="btn btn-danger" onclick="location.href='../Services/Users/process_delete.php?user_id=<?= $user['id'] ?>'">
+            <button type="button" class="btn btn-secondary" onclick="location.href='../Services/Users/change_permission.php?user_id=<?=$user['id']?>&lvl=<?= $user['permission'] > 0 ? 0 : 1 ?>'">
+                <?php
+                echo $user['permission'] > 0 ? 'Demote' : 'Promote';
+                ?>
+            </button>
+            <button type="button" class="btn btn-danger" onclick="location.href='../Services/Users/change_permission.php?user_id=<?=$user['id']?>&lvl=-1'">
                 Smazat
             </button>
         </form>
