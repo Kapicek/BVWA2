@@ -39,61 +39,103 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
 </header>
 
 <section>
-    <div id="user-card">
+    <form id="user-card" class="mt-3" method="post" action="/bvwa2/Services/Users/update_profile.php">
         <img src="data:image/jpeg;base64,<?= base64_encode($user['profilePic']) ?>" alt="Profilová fotografie">
-        <p>Jméno: <?= $user['firstName'] ?></p>
-        <p>Příjmení: <?= $user['lastName'] ?></p>
-        <p>Email: <?= $user['email'] ?></p>
-        <p>Telefon: <?= $user['phone'] ?></p>
-        <p>Pohlaví: <?= $user['gender'] ?></p>
-        <p>Login: <?= $user['username'] ?></p>
 
-        <button onclick="toggleEditMode()">Editovat profil</button>
-    </div>
+        <div class="form-group mb-3">
+            <label for="firstName">Jméno:</label>
+            <input type="text" class="form-control" name="firstName" value="<?= $user['firstName']; ?>" readonly>
+        </div>
 
-    <div id="editForm" style="display:none;">
-        <form class="mt-3" method="post" action="/bvwa2/Services/Users/update_profile.php">
-            <div class="form-group mb-3">
-                <label for="firstName">Jméno:</label>
-                <input type="text" class="form-control" name="firstName" value="<?= $user['firstName']; ?>">
-            </div>
+        <div class="form-group mb-3">
+            <label for="lastName">Příjmení:</label>
+            <input type="text" class="form-control" name="lastName" value="<?= $user['lastName']; ?>" readonly>
+        </div>
 
-            <div class="form-group mb-3">
-                <label for="lastName">Příjmení:</label>
-                <input type="text" class="form-control" name="lastName" value="<?= $user['lastName']; ?>">
-            </div>
+        <div class="form-group mb-3">
+            <label for="lastName">Uživatelské jméno:</label>
+            <input type="text" class="form-control" name="username" value="<?= $user['username']; ?>" readonly>
+        </div>
 
-            <div class="form-group mb-3">
-                <label for="email">Email:</label>
-                <input type="text" class="form-control" name="email" value="<?= $user['email']; ?>">
-            </div>
+        <div class="form-group mb-3">
+            <label for="lastName">Pohlaví:</label>
+            <input type="text" class="form-control" name="gender" value="<?= $user['gender']; ?>" readonly>
+        </div>
 
-            <div class="form-group mb-3">
-                <label for="phone">Telefon:</label>
-                <input type="text" class="form-control" name="phone" value="<?= $user['phone']; ?>">
-            </div>
+        <div class="form-group mb-3">
+            <label for="email">Email:</label>
+            <input type="text" class="form-control" name="email" value="<?= $user['email']; ?>" readonly>
+        </div>
 
-            <button type="submit" class="btn btn-primary">Uložit změny</button>
-            <button type="button" class="btn btn-danger" onclick="toggleEditMode()">Zrušit změny</button>
-        </form>
-    </div>
+        <div class="form-group mb-3">
+            <label for="phone">Telefon:</label>
+            <input type="text" class="form-control" name="phone" value="<?= $user['phone']; ?>" readonly>
+        </div>
+
+        <div class="form-group mb-3">
+            <button type="button" class="btn btn-primary" id="editButton" onclick="toggleEditMode()">Editovat profil</button>
+            <button type="button" class="btn btn-success" id="saveChangesButton" onclick="saveChanges()" style="display: none;">Uložit změny</button>
+            <button type="button" class="btn btn-secondary" id="cancelButton" onclick="cancelChanges()" style="display: none;">Zrušit</button>
+        </div>
+
+        <div class="form-group mb-3">
+            <form id="test" method="post" action="Messages.php">
+                <button type="button" class="btn btn-primary" id="cancelButton" onclick="messagesPage()">InBox</button>
+            </form>
+        </div>
+
+    </form>
 
     <script>
-            function toggleEditMode() {
-                let viewMode = document.getElementById('user-card');
-                let editForm = document.getElementById('editForm');
+        const values = new Map();
+        const form = document.getElementById('user-card');
 
-                if (viewMode.style.display === 'none') {
-                    viewMode.style.display = 'block';
-                    editForm.style.display = 'none';
-                    console.log("edit mod")
-                } else {
-                    viewMode.style.display = 'none';
-                    editForm.style.display = 'block';
-                    console.log("view mod")
-                }
-            }
-        </script>
-    </section>
-    </body>
-    </html>
+        function toggleEditMode() {
+            let userCard = document.getElementById('user-card');
+            let inputs = userCard.querySelectorAll('.form-control');
+            let editButton = document.getElementById('editButton');
+            let saveChangesButton = document.getElementById('saveChangesButton');
+            let cancelButton = document.getElementById('cancelButton');
+
+            userCard.removeAttribute('readonly');
+            inputs.forEach(input => {
+                input.removeAttribute('readonly');
+                values.set(input.name, input.value);
+            });
+            editButton.style.display = 'none';
+            saveChangesButton.style.display = 'block';
+            cancelButton.style.display = 'block';
+            console.log(values);
+        }
+
+        function saveChanges() {
+            document.getElementById('user-card').submit();
+        }
+
+        function messagesPage() {
+            window.location.href = "Messages.php";
+        }
+
+        function cancelChanges() {
+            let userCard = document.getElementById('user-card');
+            let inputs = userCard.querySelectorAll('.form-control');
+            let editButton = document.getElementById('editButton');
+            let saveChangesButton = document.getElementById('saveChangesButton');
+            let cancelButton = document.getElementById('cancelButton');
+
+            inputs.forEach(input => {
+                console.log(input);
+                input.value = values.get(input.name);
+                input.setAttribute('readonly', 'true');
+            });
+            userCard.setAttribute('readonly', 'true');
+            editButton.style.display = 'block';
+            saveChangesButton.style.display = 'none';
+            cancelButton.style.display = 'none';
+            console.log(values);
+        }
+    </script>
+</section>
+
+</body>
+</html>
