@@ -3,7 +3,7 @@ use Services\Users\UserManager;
 
 session_start();
 
-if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE["perm"])) {
+if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE["perm"]) && $_COOKIE["perm"] >= 0) {
     $user_id = $_COOKIE["user_id"];
     $username = $_COOKIE["username"];
     $perm = $_COOKIE["perm"];

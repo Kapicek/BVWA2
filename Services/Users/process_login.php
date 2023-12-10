@@ -41,6 +41,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $row = $result->fetch_assoc();
         if (password_verify($loginPassword, $row['password'])) {
             // Heslo je platné
+
+            if($row["permission"] < 0){
+                echo '<script>alert("Tento účet byl zablokován nebo smazán")</script>';
+                echo '<script>window.location="../../index.php"</script>';
+                die();
+            }
+
             setcookie("user_id", $row["id"], time() + 1200, "/");
             setcookie("username", $row["username"], time() + 1200, "/");
             setcookie("perm", $row["permission"], time() + 1200, "/");
