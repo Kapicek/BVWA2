@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Heslo je platné
             $_SESSION['user_id'] = $row['id'];
             $_SESSION['username'] = $row['username'];
-            $isAdmin = $row['isAdmin'];
+            $isAdmin = $row['permission'];
 
             // Pokud je přihlášený uživatel admin tak ho to přesměruje
             if($isAdmin == 1) {
