@@ -9,6 +9,7 @@ if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE[
 
     // Importujte třídu MessageManager
     require_once(__DIR__ . '/../Services/Message/MessageManager.php');
+    require_once(__DIR__ . '/../Services/Users/UserManager.php');
 
     // Vytvořte instanci třídy MessageManager
     $messageManager = new MessageManager();
@@ -16,6 +17,10 @@ if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE[
     // Získání všech zpráv pro uživatele
     $allReceivedMessages = $messageManager->getAllMessagesForUser($user_id);
     $allSendedMessages = $messageManager->getAllMessagesByUser($user_id);
+    //$userManager = new UserManager();
+
+    //$user = $userManager->getUserById($user_id);
+
 } else {
     // Pokud uživatel není přihlášen, přesměrujte ho na přihlašovací stránku
     header('Location: ../Services/Users/process_login.php');
@@ -49,11 +54,31 @@ if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE[
 </head>
 
 <body>
-    <nav class="navbar navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand mx-auto" href="UserProfile.php">
-                <h1>Zprávy</h1>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
             </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item ">
+                        <a class="nav-link" href="UserProfile.php">Profil</a>
+                    </li>
+
+                </ul>
+            </div>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item ">
+                        <form action="#" method="POST">
+                            <input type="submit" name="sub" class="btn btn-danger" value="Odhlásit">
+                        </form>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
     <?php
