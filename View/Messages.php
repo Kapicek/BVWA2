@@ -37,6 +37,10 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
         .hidden {
             display: none;
         }
+
+        .message-header {
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -53,6 +57,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
             <!-- Tlačítko pro změnu na doručeno a odesláno -->
             <aside class="col-md-2">
                 <div class="d-flex flex-column align-items-center">
+                    <button onclick="location.href='../Services/Message/SendMessage.php'" class="btn btn-danger mb-2">Nová zpráva</button>
                     <button onclick="showSection('received')" class="btn btn-success mb-2">Doručené</button>
                     <button onclick="showSection('sended')" class="btn btn-primary mb-2">Odeslané</button>
                 </div>
@@ -62,11 +67,13 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
             <main class="col-md-10">
                 <section class="mb-4" id="received">
                     <?php foreach ($allReceivedMessages as $message) { ?>
-                        <div class="card mb-3 bg-dark text-light">
-                            <div class="card-header">
+                        <div
+                            class="card mb-3 <?php echo ($message['is_displayed'] == 1) ? 'bg-gray text-dark' : 'bg-dark text-light'; ?>">
+                            <div class="card-header message-header"
+                                onclick="toggleMessage(this, <?php echo $message['id']; ?>, <?php echo $message['is_displayed']; ?>, 1)">
                                 <?php echo $message['krestni'] . ' ' . $message['prijmeni']; ?> vám posílá zprávu:
                             </div>
-                            <div class="card-body">
+                            <div class="card-body" style="display: none;">
                                 <p class="card-text">
                                     <?php echo $message['decryptedContent']; ?>
                                 </p>
@@ -74,13 +81,16 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                         </div>
                     <?php } ?>
                 </section>
+
                 <section class="mb-4" id="sended">
                     <?php foreach ($allSendedMessages as $message) { ?>
-                        <div class="card mb-3 bg-dark text-light">
-                            <div class="card-header">
+                        <div
+                            class="card mb-3 <?php echo ($message['is_displayed'] == 1) ? 'bg-gray text-dark' : 'bg-dark text-light'; ?>">
+                            <div class="card-header message-header"
+                                onclick="toggleMessage(this, <?php echo $message['id']; ?>, <?php echo $message['is_displayed']; ?>, 0)">
                                 <?php echo $message['krestni'] . ' ' . $message['prijmeni']; ?> vám posílá zprávu:
                             </div>
-                            <div class="card-body">
+                            <div class="card-body" style="display: none;">
                                 <p class="card-text">
                                     <?php echo $message['decryptedContent']; ?>
                                 </p>
@@ -95,6 +105,26 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
     <!-- Bootstrap JS -->
 
     <script>
+        function toggleMessage(element, messageId, isDisplayed, isReceiver) {
+            var cardBody = element.nextElementSibling;
+
+            if (cardBody.style.display === 'none' || cardBody.style.display === '') {
+                cardBody.style.display = 'block';
+                if (isDisplayed === 0 && isReceiver == 1){
+                    markMessageAsDisplayed(messageId);
+                }
+            } else {
+                cardBody.style.display = 'none';
+            }
+        }
+
+        function markMessageAsDisplayed(messageId) {
+            // Make an AJAX request to call the PHP function
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "../Services/Users/update_message.php?action=markAsDisplayed&id=" + messageId, true);
+            xhr.send();
+        }
+
         function showSection(sectionId) {
             // Skryj všechny sekce
             document.getElementById('received').classList.add('hidden');
@@ -108,6 +138,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 </body>
 
