@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     list($width, $height) = getimagesize($profilePicTmp);
 
     // Příprava nových rozměrů (maximální šířka a výška)
-    $newWidth = 900;
+    $newWidth = 800;
     $newHeight = ($height / $width) * $newWidth;
 
     // Vytvoření prázdného obrázku s novými rozměry
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Parametry pro bind_param
-    $stmt->bind_param('ssssbss', $firstName, $lastName, $email, $phone, $gender, $profilePic, $username, $password);
+    $stmt->bind_param('ssssssss', $firstName, $lastName, $email, $phone, $gender, $profilePic, $username, $password);
 
     // Odeslání binárních dat (pro případné obrázky apod.)
     $stmt->send_long_data(5, $profilePic);
@@ -82,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
 
-    if ($stmt->execute()) {
+    if ($stmt) {
         echo "Registrace úspěšná";
     } else {
         echo "Chyba při registraci: " . $conn->error;
