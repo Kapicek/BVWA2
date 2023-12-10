@@ -133,7 +133,23 @@ public function getAllMessagesByUser($user_id) {
     return $messages;
 }
 
+public function markMessageAsDisplayed($message_id) {
+    $conn = $this->dbConnection->getConnection();
+    
+    // Příprava připraveného dotazu
+    $updateSql = "UPDATE messages SET is_displayed = 1 WHERE id = ?";
 
+    // Připravení a provedení připraveného dotazu s bind_param
+    $updateStmt = $conn->prepare($updateSql);
+    $updateStmt->bind_param("i", $message_id);
+    $updateStmt->execute();
+
+    // Uzavření připraveného dotazu
+    $updateStmt->close();
+
+    // Uzavření spojení s databází
+    $this->dbConnection->closeConnection();
+}
 
 }
 
