@@ -15,8 +15,6 @@ $conn = $dbConnection->getConnection();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-
-    
     // Získání dat z přihlašovacího formuláře
     $firstName = $_POST['firstName'];
     $lastName = $_POST['lastName'];

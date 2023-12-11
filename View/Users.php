@@ -112,13 +112,13 @@ if (isset($_POST["sub"])) {
 
                 <dialog id="<?= $user['id'] ?>">
                     <p>Opravdu chceš uživatele smazat</p>
-                    <form class="form-group form-group mb-5" method="dialog">
+                    <div>
                         <button type="button" class="btn btn-danger" onclick="closeDialog(<?=$user['id']?>)">CANCEL</button>
                         <button type="button" class="btn btn-primary"
                                 onclick="location.href='../Services/Users/change_permission.php?user_id=<?= $user['id'] ?>&lvl=-1'">
                             OK
                         </button>
-                    </form>
+                    </div>
                 </dialog>
 
                 <div class="form-group mb-3">
@@ -148,7 +148,7 @@ if (isset($_POST["sub"])) {
 
                 <div class="form-group mb-3">
                     <label>Telefon:</label>
-                    <input id="phoneInputId" type="text" class="form-control" name="phone" value="<?= openssl_decrypt($user['phone'], 'aes-256-cbc', $encryptionKey, 0, $user['key_iv']); ?>">
+                    <input id="phoneInputId" type="text" class="form-control" name="phone" value="<?= openssl_decrypt($user['phone'], 'aes-256-cbc', $encryptionKey, 0, $user['key_iv']) ?>">
                 </div>
 
                 <input type="hidden" name="page" value="users">
