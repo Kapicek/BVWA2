@@ -137,14 +137,12 @@ if (isset($_POST["sub"])) {
             </div>
 
             <input type="hidden" name="page" value="profile">
+            <input type="hidden" name="user_id" value="<?= $user['id']?>">
 
             <div class="form-group mb-3">
-                <button type="button" class="btn btn-primary" id="editButton" onclick="toggleEditMode()">Editovat
-                    profil</button>
-                <button type="button" class="btn btn-success" id="saveChangesButton" onclick="saveChanges()"
-                    style="display: none;">Uložit změny</button>
-                <button type="button" class="btn btn-secondary" id="cancelButton" onclick="cancelChanges()"
-                    style="display: none;">Zrušit</button>
+                <button type="button" class="btn btn-primary" id="editButton" onclick="toggleEditMode()">Editovat profil</button>
+                <button type="submit" class="btn btn-success" id="saveChangesButton" style="display: none;">Uložit změny</button>
+                <button type="button" class="btn btn-secondary" id="cancelButton" onclick="cancelChanges()" style="display: none;">Zrušit</button>
             </div>
 
         </form>
