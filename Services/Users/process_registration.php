@@ -135,7 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     preg_match($xss_reg, $gender, $matches);
     if (count($matches) > 0) {
 
-        echo '<script>alert("POhlaví nesmí obsahovat < nebo >")</script>';
+        echo '<script>alert("Pohlaví nesmí obsahovat < nebo >")</script>';
         echo '<script>window.location="../../index.php"</script>';
         die();
     }
@@ -144,7 +144,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     } else {
 
-        echo '<script>alert("POhlaví není správně")</script>';
+        echo '<script>alert("Pohlaví není správně")</script>';
         echo '<script>window.location="../../index.php"</script>';
         die();
     }

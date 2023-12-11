@@ -110,6 +110,16 @@ if (isset($_POST["sub"])) {
                     </div>
                 </div>
 
+                <dialog id="<?= $user['id'] ?>">
+                    <p>Opravdu chceš uživatele smazat</p>
+                    <form class="form-group form-group mb-5" method="dialog">
+                        <button type="button" class="btn btn-danger" onclick="closeDialog(<?=$user['id']?>)">CANCEL</button>
+                        <button type="button" class="btn btn-primary"
+                                onclick="location.href='../Services/Users/change_permission.php?user_id=<?= $user['id'] ?>&lvl=-1'">
+                            OK
+                        </button>
+                    </form>
+                </dialog>
 
                 <div class="form-group mb-3">
                     <label>Jméno:</label>
@@ -155,14 +165,26 @@ if (isset($_POST["sub"])) {
                     echo $user['permission'] > 0 ? 'Demote' : 'Promote';
                     ?>
                 </button>
-                <button type="button" class="btn btn-danger"
-                    onclick="location.href='../Services/Users/change_permission.php?user_id=<?= $user['id'] ?>&lvl=-1'">
-                    Smazat
-                </button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete(<?=$user['id']?>)">Smazat</button>
             </form>
 
         <?php endforeach; ?>
     </section>
+
+    <script>
+        function confirmDelete(id) {
+            const dialog = document.getElementById(id);
+            if(dialog) {
+                dialog.open = true;
+            }
+        }
+        function closeDialog(id) {
+            const dialog = document.getElementById(id);
+            if(dialog) {
+                dialog.open = false;
+            }
+        }
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
