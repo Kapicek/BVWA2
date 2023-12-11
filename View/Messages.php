@@ -32,6 +32,15 @@ if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE[
     echo '<script>window.location="../index.php"</script>';
     exit();
 }
+
+if (isset($_POST["sub"])) {
+
+    setcookie("user_id", "", time() - 36000, "/");
+    setcookie("username", "", time() - 36000, "/");
+    setcookie("perm", "", time() - 36000, "/");
+    echo '<script>alert("Byl jste odhlášen")</script>';
+    echo '<script>window.location="../index.php"</script>';
+}
 ?>
 
 <!DOCTYPE html>
